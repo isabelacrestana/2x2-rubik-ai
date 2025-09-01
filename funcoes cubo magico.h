@@ -178,6 +178,34 @@ void tsa(int v[24])
     v[14] = aux1;
 }
 
+void tsh(int v[24])
+{
+    int aux1,aux2,aux3,aux4;
+    aux1 = v[8];
+    aux2 = v[9];
+    aux3 = v[10];
+    aux4 = v[11];
+    v[8] = aux2;
+    v[9] = aux4;
+    v[10] = aux1;
+    v[11] = aux3;
+    aux1 = v[22];
+    aux2 = v[23];
+    v[22] = v[7];
+    v[23] = v[5];
+    aux3 = v[12];
+    aux4 = v[14];
+    v[12] = aux1;
+    v[14] = aux2;
+    aux1 = v[16];
+    aux2 = v[17];
+    v[16] = aux4;
+    v[17] = aux3;
+    v[5] = aux1;
+    v[7] = aux2;
+
+}
+
 // Funcao que imprime o cubo para o jogador
 void interfaceGrafica(int v[24])
 {
