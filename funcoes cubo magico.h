@@ -4,14 +4,15 @@
 #include <stdlib.h>
 
 // prototipos das funcoes
+void copia(int origem[24], int destino[24]);
 
 void vetorResposta(int v[24])
 {
-    for(int i = 0; i<24; i++)
-    {
-        v[i] = i+1;
-    }
+    //int estado[24] = {5,3,2,2,1,6,4,4,3,6,1,5, 5,3,2,2,1,6,4,4,3,6,1,5};
+    int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
+    copia(vetor, v);
 }
+
 
 void imprime(int vetor[24])
 {
@@ -239,14 +240,13 @@ int face_montada(int v[24], int face)
 
 int funcao_avaliadora(int v[24])
 {
-    for(int i=0; i<20; i+=4)
+    for(int i = 0; i < 24; i += 4) // cada 4 posições é uma face
     {
-        // ja retorna caso ache uma face que nao esteja montada
-        if(!face_montada(v,i))
-            return 0;
+        if(v[i] != v[i+1] || v[i] != v[i+2] || v[i] != v[i+3])
+            return 0; // face não está montada
     }
 
-    return 1; // cubo montado
+    return 1; // todas as faces montadas
 }
 
 void realiza_mov(int mov, int v[24])
@@ -279,6 +279,7 @@ void realiza_mov(int mov, int v[24])
 
         case 5:
         {
+            tsh(v);
             break;
         }
 
@@ -297,6 +298,14 @@ void realiza_mov(int mov, int v[24])
         {
             break;
         }
+    }
+}
+
+void copia(int origem[24], int destino[24])
+{
+    for(int i = 0; i<24; i++)
+    {
+        destino[i] = origem[i];
     }
 }
 
