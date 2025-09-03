@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../funcoes cubo magico.h"
+#include "hash.h"
 
 int num = 0;
 //Estrutura dos elementos da fila
@@ -34,7 +35,6 @@ FILA* CriaFila()
 
 void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int cubo_pai[])
 {
-    printf("aqui");
     NO* novo;
     novo = (NO*) malloc(sizeof(NO));
 
@@ -55,7 +55,7 @@ void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int
 
    // printf("Movimento colocado = %d\n", novo->movimentos[indice]);
     novo->ultimaPos = indice;
-    printf("indice = %d\n", novo->ultimaPos);
+    //printf("indice = %d\n", novo->ultimaPos);
     novo->prox = NULL;
 
     if (!(f->INICIO == NULL))
@@ -69,6 +69,8 @@ void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int
 void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[24])
 {
     int movimentoDoPai, movimentoDoVo, vetor[24], podeInserir;
+    int cubo_novo[24];
+    copia(cubo_pai, cubo_novo);
 
     movimentoDoPai = vetorMovimentos[indice - 1];
 
@@ -80,7 +82,6 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
     for(int i = 1; i<7; i++)
     {
         //printf("movimento inserido = %d\n", f->FIM->movimentos[indice]);
-
         podeInserir = 1;
 
             if(indice>2)
@@ -106,7 +107,10 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
             }
 
             if(podeInserir)
+            {
                 InsereFila(f, indice, i, vetorMovimentos, cubo_pai);
+            }
+
     }
 }
 
@@ -116,7 +120,6 @@ int visitaEstado(FILA* f, int cubo[])
     int ultimaPos = f->INICIO->ultimaPos;
     int movimento = f->INICIO->movimentos[ultimaPos];
     if(f->INICIO->ultimaPos > 0){
-        printf("\n\nAqui\n");
         copia(f->INICIO->cubo_pai, cubo);}
     // montando o cubo desse estado
     realiza_mov(movimento, cubo);
@@ -184,7 +187,7 @@ int encontraPosicao(NO* primeiroDaLista)
 
     if(primeiroDaLista->movimentos[indice] != 0)
     {
-        movimentoAnterior = primeiroDaLista->movimentos[indice - 1];
+        movimentoAnterior = primeiroDaLista->movimentos[indice];
 
         // vendo se preciso voltar mais uma vez
         if(indice < primeiroDaLista->prox->ultimaPos)

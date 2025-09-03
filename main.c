@@ -26,7 +26,7 @@ int main() {
     interfaceGrafica(cubo_magico);
 
     printf("\n\nCubo depois de embaralhar\n");
-    cuboInicial(cubo_magico);
+    //cuboInicial(cubo_magico);
     interfaceGrafica(cubo_magico);
 
     copia(cubo_magico, inicio);
@@ -79,7 +79,7 @@ int main() {
     imprime(inicio);
     printf("\nCubo montado:\n");
     interfaceGrafica(cubo_magico);
-
+    printf("num = %d", num);
 
     return 0;
 }
@@ -95,7 +95,7 @@ int cuboInicial(int v[24])
     int anterior = 0, num;
     int mov;
     vetorResposta(v);
-    num = aleatorio(9,9);
+    num = aleatorio(11,11);
 
     while(num > 0)
     {
@@ -148,28 +148,30 @@ void loopIA(int cubo[24], FILA* f)
 
     do
     {
-        printf("\n\n\n\n ---------------- FILHO %d\n", f->INICIO->num);
+        //printf("\n\n\n\n ---------------- FILHO %d\n", f->INICIO->num);
 
-        printf("\n\nVisitando indice = %d\n",proxIndice);
-        mov = f->INICIO->movimentos[proxIndice];
+        //printf("\n\nVisitando indice = %d\n",proxIndice);
+        //mov = f->INICIO->movimentos[proxIndice];
 
-        printf("\nMovimento: %d", mov);
-        printf("\nAntes de movimentar:\n");
-        imprime(cubo);
+        //printf("\nMovimento: %d", mov);
+        //printf("\nAntes de movimentar:\n");
+        //imprime(cubo);
         montado = visitaEstado(f, cubo);
-        printf("Depois de movimentar:\n");
-        imprime(cubo);
+        //printf("Depois de movimentar:\n");
+       //mprime(cubo);
 
         if(!montado)
         {
             posicao = f->INICIO->ultimaPos;
             vetor(f, vetorMovimentos);
 
+            //printf("indice (visitado) = %d\n", f->INICIO->ultimaPos);
             proxIndice = encontraPosicao(f->INICIO);
+            //printf("prox indice = %d\n", proxIndice);
             RemoveFila(f);
 
             funcaoSucessora(f, posicao + 1, vetorMovimentos, cubo);
-            printf("ultima posicao: %d\n", f->INICIO->ultimaPos);
+            //printf("ultima posicao: %d\n", f->INICIO->ultimaPos);
             //printf("ultimo mov: %d\n", f->INICIO->movimentos[f->INICIO->ultimaPos]);
         }
     } while(!montado);
