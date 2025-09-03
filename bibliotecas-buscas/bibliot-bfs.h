@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../funcoes cubo magico.h"
+#include "filaVisitados.h"
 #include "hash.h"
 
 int num = 0;
@@ -51,7 +52,7 @@ void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int
     if(cubo_pai)
         copia(cubo_pai, novo->cubo_pai);
     else
-        cubo_pai = NULL;
+        memset(novo->cubo_pai, 0, sizeof(novo->cubo_pai));
 
    // printf("Movimento colocado = %d\n", novo->movimentos[indice]);
     novo->ultimaPos = indice;
@@ -69,9 +70,6 @@ void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int
 void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[24])
 {
     int movimentoDoPai, movimentoDoVo, vetor[24], podeInserir;
-    int cubo_novo[24];
-    copia(cubo_pai, cubo_novo);
-
     movimentoDoPai = vetorMovimentos[indice - 1];
 
     if(indice>2)
@@ -83,102 +81,65 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
     {
         //printf("movimento inserido = %d\n", f->FIM->movimentos[indice]);
         podeInserir = 1;
-
-            if(indice>2)
+        if(indice>2)
+        {
+            if(movimentoDoVo == movimentoDoPai && movimentoDoPai == i)
             {
-                if(movimentoDoVo == movimentoDoPai && movimentoDoPai == i)
-                {
-                    podeInserir = 0;
-                }
+                podeInserir = 0;
             }
+        }
 
-            if(movimentoDoPai%2 == 0)
-            {
-                // garantindo que nao eh o mov contrario
-                if(i == movimentoDoPai-1)
-                    podeInserir = 0;
-            }
+        if(movimentoDoPai%2 == 0)
+        {
+            // garantindo que nao eh o mov contrario
+            if(i == movimentoDoPai-1)
+                podeInserir = 0;
+        }
 
-            else
-            {
-                // garantindo que nao eh o mov contrario
-                if(i == movimentoDoPai + 1)
-                    podeInserir = 0;
-            }
+        else
+        {
+            // garantindo que nao eh o mov contrario
+            if(i == movimentoDoPai + 1)
+                podeInserir = 0;
+        }
 
-            if(podeInserir)
-            {
-                InsereFila(f, indice, i, vetorMovimentos, cubo_pai);
-            }
+        if (podeInserir) {
+        // monta o cubo do filho
+        copia(cubo_pai, vetor);
+        realiza_mov(i, vetor);
+
+        // converte pra CubeState
+        CubeState state;
+        for (int k = 0; k < 24; k++)
+            state[k] = (uint8_t)vetor[k];
+
+        // só insere se não estiver na hash
+        if (insert_if_not_exists(state)) {
+            InsereFila(f, indice, i, vetorMovimentos, cubo_pai);
+}
+    }
 
     }
 }
 
 int visitaEstado(FILA* f, int cubo[])
 {
-    // visitando o primeiro da fila
     int ultimaPos = f->INICIO->ultimaPos;
     int movimento = f->INICIO->movimentos[ultimaPos];
+
     if(f->INICIO->ultimaPos > 0){
-        copia(f->INICIO->cubo_pai, cubo);}
-    // montando o cubo desse estado
+        copia(f->INICIO->cubo_pai, cubo);
+    }
+
+    // Montando o cubo desse estado
     realiza_mov(movimento, cubo);
 
-    // checando se está montado
+    // Checando se está montado
     if(funcao_avaliadora(cubo))
         return 1;
+
     return 0;
 }
-
-/*void arrumaCubo(int cubo_inicial[24], int cubo[24], NO* primeiroDaLista)
-{
-    int indice = primeiroDaLista->prox->ultimaPos;
-    NO* prox = primeiroDaLista->prox;
-
-    int aux[24];
-    if(indice!=0)
-    {
-        copia(cubo_inicial, aux);
-
-        for(int i=1; i<indice; i++)
-        {
-            realiza_mov(prox->movimentos[i], aux);
-        }
-
-        copia(aux, cubo);
- /*   }
-
-
-    // se nao tiver montado, preciso voltar o cubo para como estava antes
-    /*if(movimento != 0)
-    {
-        if(movimento%2 == 0)
-            realiza_mov(movimento - 1, cubo);
-
-        else
-            realiza_mov(movimento + 1, cubo);
-
-        // vendo se preciso voltar mais uma vez
-        if(indice < primeiroDaLista->prox->ultimaPos)
-        {
-            realiza_mov(primeiroDaLista->prox->movimentos[indice], cubo);
-        }
-
-        else if(indice > 1)
-        {
-            if(movimentoAnterior != primeiroDaLista->prox->movimentos[indice - 1])
-            {
-                if(movimentoAnterior%2 == 0)
-                    realiza_mov(movimentoAnterior - 1, cubo);
-
-                else
-                    realiza_mov(movimentoAnterior + 1, cubo);
-
-                realiza_mov(primeiroDaLista->prox->movimentos[indice - 1], cubo);
-            }
-        }
-    }*/
-//}
 
 int encontraPosicao(NO* primeiroDaLista)
 {

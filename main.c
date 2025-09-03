@@ -4,6 +4,8 @@
 #include <time.h>
 #include "funcoes cubo magico.h"
 #include "bibliotecas-buscas/bibliot-bfs.h"
+#include "bibliotecas-buscas/filaVisitados.h"
+#include "bibliotecas-buscas/hash.h"
 
 void loopIA(int cubo[24], FILA* f);
 
@@ -78,6 +80,8 @@ int main() {
     printf("\n Cubo embaralhado:\n");
     imprime(inicio);
     printf("\nCubo montado:\n");
+    imprime(cubo_magico);
+    printf("\n\n");
     interfaceGrafica(cubo_magico);
     printf("num = %d", num);
 
@@ -138,41 +142,36 @@ int opcoesJogador(int v[24])
 
 void loopIA(int cubo[24], FILA* f)
 {
-    int montado, mov;
-    int posicao = 0, proxIndice = 0, vetorMovimentos[20], cubo_visitado[24], i = 0;
+    int montado;
+    int vetorMovimentos[20];
+    int cubo_visitado[24];
     int cubo_inicial[24];
-    //int cubo_atual[24];
+
     copia(cubo, cubo_inicial);
 
+    // Inserindo nó inicial
     InsereFila(f, 0, 0, vetorMovimentos, NULL);
 
     do
     {
-        //printf("\n\n\n\n ---------------- FILHO %d\n", f->INICIO->num);
+        if (!f || !f->INICIO) break;  // segurança
 
-        //printf("\n\nVisitando indice = %d\n",proxIndice);
-        //mov = f->INICIO->movimentos[proxIndice];
-
-        //printf("\nMovimento: %d", mov);
-        //printf("\nAntes de movimentar:\n");
-        //imprime(cubo);
+        // Visita estado do primeiro nó da fila
         montado = visitaEstado(f, cubo);
-        //printf("Depois de movimentar:\n");
-       //mprime(cubo);
 
-        if(!montado)
+        if (!montado)
         {
-            posicao = f->INICIO->ultimaPos;
+            int posicao = f->INICIO->ultimaPos;
+
+            // Atualiza vetor de movimentos
             vetor(f, vetorMovimentos);
 
-            //printf("indice (visitado) = %d\n", f->INICIO->ultimaPos);
-            proxIndice = encontraPosicao(f->INICIO);
-            //printf("prox indice = %d\n", proxIndice);
-            RemoveFila(f);
-
+            // Gera sucessores usando o cubo atual
             funcaoSucessora(f, posicao + 1, vetorMovimentos, cubo);
-            //printf("ultima posicao: %d\n", f->INICIO->ultimaPos);
-            //printf("ultimo mov: %d\n", f->INICIO->movimentos[f->INICIO->ultimaPos]);
+
+            // Remove o nó atual da fila
+            RemoveFila(f);
         }
-    } while(!montado);
+
+    } while (!montado);
 }
