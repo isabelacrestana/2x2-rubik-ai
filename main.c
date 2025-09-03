@@ -3,6 +3,11 @@
 #include <conio.h>
 #include <time.h>
 #include "funcoes cubo magico.h"
+#include "bibliotecas-buscas/bibliot-bfs.h"
+#include "bibliotecas-buscas/filaVisitados.h"
+#include "bibliotecas-buscas/hash.h"
+
+void loopIA(int cubo[24], FILA* f);
 
 void menu(int matriz[][12]);
 int opcoesJogador(int v[24]);
@@ -12,8 +17,10 @@ int cuboInicial(int v[24]);
 int main() {
     srand(time(NULL)); // Inicializa o gerador com o tempo atual
 
-    int cubo_magico[24];
+    int cubo_magico[24], inicio[24], caminhoAteResposta[20], ultimaPosicao;
     int opc;
+
+    FILA* f = CriaFila();
 
     // iniciando como matriz resposta so para comparar:
     vetorResposta(cubo_magico);
@@ -23,6 +30,8 @@ int main() {
     printf("\n\nCubo depois de embaralhar\n");
     //cuboInicial(cubo_magico);
     interfaceGrafica(cubo_magico);
+
+    copia(cubo_magico, inicio);
 
     printf("\n\npressione qualquer tecla...");
     getch();
@@ -57,19 +66,24 @@ int main() {
     }
     system("cls");
 
-    /*if(opc == 2)
+    if(opc == 2)
     {
-        loopIA(f, v, cubo_magico);
+        loopIA(cubo_magico, f);
         ultimaPosicao = CuboMontado(f, caminhoAteResposta);
         printf("Caminho ate a resposta: ");
         for(int i = 0; i<ultimaPosicao+1; i++)
         {
             printf("%d - ", caminhoAteResposta[i]);
         }
-    }*/
+    }
     printf("\n\n         Voce venceu :) !\n");
+    printf("\n Cubo embaralhado:\n");
+    imprime(inicio);
+    printf("\nCubo montado:\n");
+    imprime(cubo_magico);
+    printf("\n\n");
     interfaceGrafica(cubo_magico);
-
+    printf("num = %d", num);
 
     return 0;
 }
@@ -82,29 +96,21 @@ int aleatorio(int n_min, int n_max)
 // funcao que embaralha o cubo a partir da matriz resposta
 int cuboInicial(int v[24])
 {
-//    int anterior = 0, num;
-//    int mov;
-//
-//    matrizResposta(matriz);
-//    num = aleatorio(10,15);
-//
-//    while(num > 0)
-//    {
-//        mov = aleatorio(1,3);   // dps adicionar todos os 6 movimentos (por enquanto so temos esses)
-//        if(mov != anterior)
-//        {
-//            realiza_mov(mov, matriz);
-//            if(mov > 6)
-//            {
-//                realiza_mov(mov-6, matriz);    // para poder embaralhar tbm com os movimentos "inversos"
-//                realiza_mov(mov-6, matriz);
-//                realiza_mov(mov-6, matriz);
-//            }
-//            anterior = num;
-//            num--;
-//        }
-//    }
+    int anterior = 0, num;
+    int mov;
     vetorResposta(v);
+    num = aleatorio(11,11);
+
+    while(num > 0)
+    {
+        mov = aleatorio(1,6);   // dps adicionar todos os 6 movimentos (por enquanto so temos esses)
+        if(mov != anterior)
+        {
+           realiza_mov(mov, v);
+           anterior = num;
+           num--;
+        }
+    }
 }
 
 int opcoesJogador(int v[24])
@@ -123,7 +129,7 @@ int opcoesJogador(int v[24])
                "                  3. Rodar parte base no sentido anti-horario\n"
                "                  4. Rodar parte base no sentido horario\n"
                "                  5. Rodar parte de tras no sentido horario\n"
-               "                  6. Rodar parte de tras no sentido anti-horario"
+               "                  6. Rodar parte de tras no sentido anti-horario\n"
                "                  7. Quero que a IA resolva para mim\n"
                "                  0. Sair\n"
                "                  ");
@@ -132,4 +138,40 @@ int opcoesJogador(int v[24])
     }while(opc<0 || opc>7);
 
     return opc;
+}
+
+void loopIA(int cubo[24], FILA* f)
+{
+    int montado;
+    int vetorMovimentos[20];
+    int cubo_visitado[24];
+    int cubo_inicial[24];
+
+    copia(cubo, cubo_inicial);
+
+    // Inserindo nó inicial
+    InsereFila(f, 0, 0, vetorMovimentos, NULL);
+
+    do
+    {
+        if (!f || !f->INICIO) break;  // segurança
+
+        // Visita estado do primeiro nó da fila
+        montado = visitaEstado(f, cubo);
+
+        if (!montado)
+        {
+            int posicao = f->INICIO->ultimaPos;
+
+            // Atualiza vetor de movimentos
+            vetor(f, vetorMovimentos);
+
+            // Gera sucessores usando o cubo atual
+            funcaoSucessora(f, posicao + 1, vetorMovimentos, cubo);
+
+            // Remove o nó atual da fila
+            RemoveFila(f);
+        }
+
+    } while (!montado);
 }
