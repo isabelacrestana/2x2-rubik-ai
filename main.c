@@ -6,13 +6,18 @@
 #include "bibliotecas-buscas/bibliot-bfs.h"
 #include "bibliotecas-buscas/filaVisitados.h"
 #include "bibliotecas-buscas/hash.h"
+#include "bibliotecas-buscas/bibliot-dfs.h"
 
 void loopIA(int cubo[24], FILA* f);
+void loopDFS(int cubo[24], PILHA *p);
+int iidfs(int max, PILHA* p, int cubo[]);
 
 void menu(int matriz[][12]);
 int opcoesJogador(int v[24]);
 int aleatorio(int n_min, int n_max);
 int cuboInicial(int v[24]);
+
+extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
 
 int main() {
     srand(time(NULL)); // Inicializa o gerador com o tempo atual
@@ -21,6 +26,7 @@ int main() {
     int opc;
 
     FILA* f = CriaFila();
+    PILHA* p = CriaPilha();
 
     // iniciando como matriz resposta so para comparar:
     vetorResposta(cubo_magico);
@@ -28,6 +34,9 @@ int main() {
     interfaceGrafica(cubo_magico);
 
     printf("\n\nCubo depois de embaralhar\n");
+   // realiza_mov(4, cubo_magico);
+     //   realiza_mov(1, cubo_magico);
+      //  realiza_mov(5, cubo_magico);
     //cuboInicial(cubo_magico);
     interfaceGrafica(cubo_magico);
 
@@ -41,6 +50,9 @@ int main() {
 
     printf("\n\n                     BEM VINDO AO PROGRAMA (...)\n\n\n"
            "                  Pressione qualquer tecla para iniciar...");
+
+    init_hash();
+
     getch();
 
     // por enquanto so temos a opcao 1
@@ -49,12 +61,13 @@ int main() {
         printf("\n\n                    CUBO INICIAL\n\n");
         interfaceGrafica(cubo_magico);
         printf("\n\n"
-               "                  Selecione uma das opcoes: (so opcao 1 funciona)\n"
+               "                  Selecione uma das opcoes:\n"
                "                  1. Quero eu mesmo(a) montar o cubo\n"
-               "                  2. Quero que a IA resolva para mim\n"
+               "                  2. Busca em Largura\n"
+               "                  3. Busca em Profundidade Limitada\n"
                "                  ");
         scanf("%d", &opc);
-    }while(opc!=1 && opc!=2);
+    }while(opc<1 && opc>3);
 
     if(opc == 1)
     {
@@ -69,21 +82,51 @@ int main() {
     if(opc == 2)
     {
         loopIA(cubo_magico, f);
-        ultimaPosicao = CuboMontado(f, caminhoAteResposta);
-        printf("Caminho ate a resposta: ");
-        for(int i = 0; i<ultimaPosicao+1; i++)
+        printf("Fim da busca bfs!\n\n");
+
+        if(f->INICIO)
         {
-            printf("%d - ", caminhoAteResposta[i]);
+            ultimaPosicao = f->INICIO->ultimaPos;
+            printf("profundidade final = %d\n\n", f->INICIO->ultimaPos);
+            printf("Caminho ate a resposta:\n");
+            for(int i = 1; i<ultimaPosicao + 1; i++)
+            {
+                printMovimentos(f->INICIO->movimentos[i]);
+            }
+            printf("\nNum de estados gerados = %d\n", num);
         }
+
+        else
+            printf("\nNum de estados gerados = %d\nNao foi encontrado um caminho. Cubo invalido.\n", num);
+
+        LimpaFila(f);
     }
-    printf("\n\n         Voce venceu :) !\n");
-    printf("\n Cubo embaralhado:\n");
-    imprime(inicio);
-    printf("\nCubo montado:\n");
-    imprime(cubo_magico);
-    printf("\n\n");
+
+    if(opc == 3)
+    {
+        loopDFS(cubo_magico, p);
+        printf("\n\nFim da busca dfs iterativa!\n\n");
+        if(p->topo)
+        {
+            printf("profundidade final = %d\n\n", p->topo->ultimaPos);
+            ultimaPosicao = p->topo->ultimaPos;
+            printf("Caminho ate a resposta:\n");
+            for(int i = 1; i<ultimaPosicao + 1; i++)
+            {
+                printMovimentos(p->topo->movimentos[i]);
+            }
+            printf("\n\nNum de estados gerados = %d\n", p->topo->num);
+        }
+        else
+            printf("Num de estados gerados = %d\nNao foi encontrado um caminho. Cubo invalido.\n", numEstados);
+        LimpaPilha(p);
+    }
+
+    printf("\n\n                 ---Cubo embaralhado---\n\n");
+    interfaceGrafica(inicio);
+    printf("\n\n\n                   ---Cubo montado---\n\n");
     interfaceGrafica(cubo_magico);
-    printf("num = %d", num);
+    printf("\n\n");
 
     return 0;
 }
@@ -99,7 +142,7 @@ int cuboInicial(int v[24])
     int anterior = 0, num;
     int mov;
     vetorResposta(v);
-    num = aleatorio(11,11);
+    num = aleatorio(12,12);
 
     while(num > 0)
     {
@@ -121,13 +164,13 @@ int opcoesJogador(int v[24])
         printf("\n\n                  Modo de jogo: LIVRE\n\n\n");
         printf("\n                  Cubo Atual\n");
         interfaceGrafica(v);
-        printf("\n Matriz:\n");
-        imprime(v);
-        printf("\n\n                  Selecione uma das acoes abaixo: (apenas 3 a 5 e 13 a 16 implementadas!!)\n"
+        //printf("\n Matriz:\n");
+        //imprime(v);
+        printf("\n\n                  Selecione uma das acoes abaixo:\n"
                "                  1. Rodar lado direito para cima\n"
                "                  2. Rodar lado direito para baixo\n"
-               "                  3. Rodar parte base no sentido anti-horario\n"
-               "                  4. Rodar parte base no sentido horario\n"
+               "                  3. Rodar base no sentido anti-horario\n"
+               "                  4. Rodar base no sentido horario\n"
                "                  5. Rodar parte de tras no sentido horario\n"
                "                  6. Rodar parte de tras no sentido anti-horario\n"
                "                  7. Quero que a IA resolva para mim\n"
@@ -144,34 +187,99 @@ void loopIA(int cubo[24], FILA* f)
 {
     int montado;
     int vetorMovimentos[20];
-    int cubo_visitado[24];
-    int cubo_inicial[24];
-
-    copia(cubo, cubo_inicial);
+    int posicao;
 
     // Inserindo nó inicial
-    InsereFila(f, 0, 0, vetorMovimentos, NULL);
+    InsereFila(f, 0, 0, vetorMovimentos, cubo);
 
+    printf("Encontrando o caminho...\n\n");
+
+    printf("%d\n\n\n", f->INICIO->ultimaPos);
     do
     {
-        if (!f || !f->INICIO) break;  // segurança
+        if (!f || !f->INICIO)
+            break;
+        copia(f->INICIO->cubo, cubo);
+
 
         // Visita estado do primeiro nó da fila
         montado = visitaEstado(f, cubo);
 
         if (!montado)
         {
-            int posicao = f->INICIO->ultimaPos;
-
             // Atualiza vetor de movimentos
             vetor(f, vetorMovimentos);
-
-            // Gera sucessores usando o cubo atual
-            funcaoSucessora(f, posicao + 1, vetorMovimentos, cubo);
+            posicao =  f->INICIO->ultimaPos + 1;
 
             // Remove o nó atual da fila
             RemoveFila(f);
+
+            if(posicao == 15)
+                return;
+            // Gera sucessores usando o cubo atual
+            funcaoSucessora(f, posicao, vetorMovimentos, cubo);
+        }
+    } while (!montado);
+}
+
+void loopDFS(int cubo[], PILHA *p)
+{
+    int profund = -1;
+    int vetorMovimentos[20];
+    int cubo_busca[24];
+
+
+
+    printf("Encontrando o caminho...\n\n");
+    int cont = -1;
+
+    do
+    {
+        init_hash();
+        copia(cubo, cubo_busca);
+        //printf("Profund = %d\n", profund);
+        fflush(stdin);
+        //printf("Num de filhos = %d\n\n", numEstados);
+        profund = profund + 1;
+    }while(!iidfs(profund, p, cubo_busca) && profund < 15);
+
+    copia(cubo_busca, cubo);
+}
+
+int iidfs(int max, PILHA* p, int cubo[])
+{
+    int posicao, vetorMovimentos[20], montado;
+    numEstados = 0;
+    Push(p, 0, 0, vetorMovimentos, cubo);
+
+    do
+    {
+
+        //printf("filho %d", p->topo->num);
+        copia(p->topo->cubo, cubo);
+
+        // Visita estado do primeiro nó da fila
+        if(p->topo->ultimaPos == max)
+            montado = visitaEstadoDfs(p, cubo);
+
+        if(montado){
+            return 1;}
+
+        posicao = p->topo->ultimaPos;
+
+        // Atualiza vetor de movimentos
+        vetorBfs(p, vetorMovimentos);
+
+        Pop(p);
+
+        // Gera sucessores usando o cubo atual
+        if(posicao < max)
+        {
+            //current_generation++;
+            funcaoSucessoraDfs(p, posicao + 1, vetorMovimentos, cubo, max);
         }
 
+        if(!p->topo)
+            return 0;
     } while (!montado);
 }

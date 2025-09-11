@@ -10,9 +10,27 @@ void vetorResposta(int v[24])
 {
     //int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
 
-    int vetor[24] = {1,4,6,1,3,1,5,6,4,5,2,3,2,4,5,2,3,6,5,6,1,2,4,3};
+    //int vetor[24] = {1,4,2,6,  6,6,1,5,  3,3,3,3,   4,4,4,5,   5,2,5,1,   1,2,6,2};
 
-    //int vetor[24] = {1, 15, 5, 17, 12, 24, 13, 3, 11, 7, 21, 9, 4, 14, 6, 20, 22, 8, 19, 23, 2, 10, 18, 16};
+     //int vetor[24] = {01, 05 ,01, 05, 02, 02, 02, 02, 06, 03, 06, 03, 04, 04, 04, 04, 05, 03, 05, 03, 06, 01, 06,01};
+
+    //int vetor[24] = {01, 06, 02, 02, 02, 02, 05, 03, 05, 03, 04, 04, 04, 04, 01, 06, 05, 01, 05, 01, 03, 03, 06, 06};
+
+    //int vetor[24] = {01, 06, 05, 03, 02, 03 ,04 ,02, 04, 01, 05, 02, 04, 04, 03, 01, 06, 05, 05, 01, 02 ,06, 06,03};
+
+    //tava testando esse
+    //int vetor[24] = {1,4,6,1,3,1,5,6,4,5,2,3,2,4,5,2,3,6,5,6,1,2,4,3};
+
+    //esse eh o de 14 movimentos
+    //int vetor[24] = {1,2,1,1,  6,3,4,6,   5,3,4,3,   4,5,4,6,   5,2,2,3,   2,5,6,1};
+
+    //int vetor[24] = {1,3,5,6,   2,6,1,3,   1,4,5,2,   3,4,5,1,   6,4,5,6,  2,2,3,4};
+     int vetor[24] = {1,6,5,5,    2,4,2,5,   6,2,3,6,    6,4,3,3,    3,1,5,1,  4,1,4,2};
+
+    //int vetor[24] = {1,4,5,6,6,4,1,3,5,5,4,3,1,4,6,2,2,3,5,1,3,2,2,6};
+    //int vetor[24] = {1,6,6,2,3,6,5,4,2,2,6,5,5,4,4,1,1,1,5,2,4,3,3,3};
+
+    //int vetor[24] = {1,2,1,2,   5,4,5,4,   3,4,3,6,  6,4,2,6,   1,6,5,1   ,2,3,3,5};
 
     copia(vetor, v);
 
@@ -314,4 +332,47 @@ void copia(int origem[24], int destino[24])
     }
 }
 
+void printMovimentos(int mov)
+{
+     switch(mov)
+    {
+        case 1:
+        {
+            printf("Rodar lado direito para cima\n");
+            break;
+        }
+
+        case 2:
+        {
+            printf("Rodar lado direito para baixo\n");
+            break;
+        }
+
+        case 3:
+        {
+            printf("Rodar base no sentido anti-horario\n");
+            break;
+        }
+
+        case 4:
+        {
+            printf("Rodar base no sentido horario\n");
+            break;
+        }
+
+        case 5:
+        {
+            printf("Rodar parte de tras no sentido horario\n");
+            break;
+        }
+
+        case 6:
+        {
+            printf("Rodar parte de tras no sentido anti-horario\n");
+            break;
+        }
+
+
+    }
+}
 #endif // FUNCOES_CUBO_MAGICO_H_INCLUDED
