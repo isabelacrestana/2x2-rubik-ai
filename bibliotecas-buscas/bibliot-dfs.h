@@ -5,8 +5,9 @@
 #include "../funcoes cubo magico.h"
 #include "filaVisitados.h"
 #include "hash.h"
+#include "newHash.h"
 
-extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
+//extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
 
 int numEstados =0;
 /* Criando uma bibioteca de manipulação de pilhas em C */
@@ -53,9 +54,9 @@ void Push(PILHA* p, int indice, int movimento, int vetorMovimentos[20], int cubo
     p->topo = novo;
 }
 
-void funcaoSucessoraDfs(PILHA* p, int indice, int vetorMovimentos[20], int cubo_pai[24], int iteration)
+void funcaoSucessoraDfs(PILHA* p, int indice, int vetorMovimentos[20], int cubo_pai[24], int iteration, ht_t *ht)
 {
-    int movimentoDoPai, movimentoDoVo, vetor[24], podeInserir, vetorM[20], returnHash;
+    int movimentoDoPai, movimentoDoVo, vetor[24], podeInserir, vetorM[20];
     movimentoDoPai = vetorMovimentos[indice - 1];
 
 
@@ -95,18 +96,15 @@ void funcaoSucessoraDfs(PILHA* p, int indice, int vetorMovimentos[20], int cubo_
             copia(cubo_pai, vetor);
             realiza_mov(i, vetor);
 
-            // converte pra CubeState
-            CubeState state;
-            for (int k = 0; k < 24; k++)
-                state[k] = (uint8_t)vetor[k];
-
             // só insere se não estiver na hash
-            returnHash = insert_if_not_exists(state, indice);
-            if(returnHash != 0)
+            int exists = ht_get(ht, vetor, indice);
+            if(exists != 1)
             {
                 Push(p, indice, i, vetorMovimentos, vetor);
-                if(returnHash == -1)
+                if(exists == -1)
                     numEstados--;
+                else
+                    ht_set(ht, vetor, indice);
             }
         }
     }
@@ -117,6 +115,7 @@ int visitaEstadoDfs(PILHA* p, int cubo[])
     // Checando se está montado
     if(funcao_avaliadora(cubo))
         return 1;
+
 
     return 0;
 }
