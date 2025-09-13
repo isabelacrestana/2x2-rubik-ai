@@ -1,27 +1,32 @@
-# Makefile para Rubik
-
 CC = gcc
 CFLAGS = -Wall -Wextra -g -Iinclude
+
 SRC = $(wildcard src/*.c)
-OBJ = $(patsubst src/%.c,obj/%.o,$(SRC))
-APP = bin/rubik
-MAIN = apps/main.c
+OBJ_SRC = $(patsubst src/%.c,obj/%.o,$(SRC))
 
-# Regra padrão
-all: $(APP)
+MAIN_WINDOWS = apps/main-windows.c
+MAIN_UNIX    = apps/main-unix.c
+OBJ_MAIN_WINDOWS = obj/main-windows.o
+OBJ_MAIN_UNIX    = obj/main-unix.o
 
-# Compila o executável
-$(APP): $(OBJ) $(MAIN)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(OBJ) $(MAIN) -o $(APP)
+# Alvo padrão (Windows)
+windows: $(OBJ_SRC) $(OBJ_MAIN_WINDOWS)
+	$(CC) $(CFLAGS) $(OBJ_SRC) $(OBJ_MAIN_WINDOWS) -o bin/rubik-windows
 
-# Compila os objetos na pasta obj
+# Alvo Unix
+unix: $(OBJ_SRC) $(OBJ_MAIN_UNIX)
+	$(CC) $(CFLAGS) $(OBJ_SRC) $(OBJ_MAIN_UNIX) -o bin/rubik-unix
+
+# Compila objetos dos src
 obj/%.o: src/%.c
-	@mkdir -p obj
+	mkdir -p obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Limpeza de arquivos compilados
-clean:
-	rm -f obj/*.o $(APP)
+# Compila objetos das mains
+obj/%.o: apps/%.c
+	mkdir -p obj
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: all clean
+# Limpeza
+clean:
+	rm -rf obj/*.o bin/*
