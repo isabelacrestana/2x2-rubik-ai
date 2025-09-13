@@ -7,17 +7,18 @@
 #include "bibliotecas-buscas/filaVisitados.h"
 #include "bibliotecas-buscas/hash.h"
 #include "bibliotecas-buscas/bibliot-dfs.h"
+#include "bibliotecas-buscas/newHash.h"
 
-void loopIA(int cubo[24], FILA* f);
+void bfs(int cubo[24], FILA* f);
 void loopDFS(int cubo[24], PILHA *p);
-int iidfs(int max, PILHA* p, int cubo[]);
+int iidfs(int max, PILHA* p, int cubo[], ht_t *ht);
 
 void menu(int matriz[][12]);
 int opcoesJogador(int v[24]);
 int aleatorio(int n_min, int n_max);
 int cuboInicial(int v[24]);
 
-extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
+//extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
 
 int main() {
     srand(time(NULL)); // Inicializa o gerador com o tempo atual
@@ -81,16 +82,17 @@ int main() {
 
     if(opc == 2)
     {
-        loopIA(cubo_magico, f);
+        bfs(cubo_magico, f);
         printf("Fim da busca bfs!\n\n");
 
         if(f->INICIO)
         {
             ultimaPosicao = f->INICIO->ultimaPos;
             printf("profundidade final = %d\n\n", f->INICIO->ultimaPos);
-            printf("Caminho ate a resposta:\n");
+            printf("Passo a passo ate a resposta:\n");
             for(int i = 1; i<ultimaPosicao + 1; i++)
             {
+                printf("%d. ", i);
                 printMovimentos(f->INICIO->movimentos[i]);
             }
             printf("\nNum de estados gerados = %d\n", num);
@@ -110,9 +112,10 @@ int main() {
         {
             printf("profundidade final = %d\n\n", p->topo->ultimaPos);
             ultimaPosicao = p->topo->ultimaPos;
-            printf("Caminho ate a resposta:\n");
+            printf("Passo a passo ate a resposta:\n");
             for(int i = 1; i<ultimaPosicao + 1; i++)
             {
+                printf("%d. ", i);
                 printMovimentos(p->topo->movimentos[i]);
             }
             printf("\n\nNum de estados gerados = %d\n", p->topo->num);
@@ -173,17 +176,16 @@ int opcoesJogador(int v[24])
                "                  4. Rodar base no sentido horario\n"
                "                  5. Rodar parte de tras no sentido horario\n"
                "                  6. Rodar parte de tras no sentido anti-horario\n"
-               "                  7. Quero que a IA resolva para mim\n"
                "                  0. Sair\n"
                "                  ");
                scanf("%d", &opc);
 
-    }while(opc<0 || opc>7);
+    }while(opc<0 || opc>6);
 
     return opc;
 }
 
-void loopIA(int cubo[24], FILA* f)
+void bfs(int cubo[24], FILA* f)
 {
     int montado;
     int vetorMovimentos[20];
@@ -193,8 +195,6 @@ void loopIA(int cubo[24], FILA* f)
     InsereFila(f, 0, 0, vetorMovimentos, cubo);
 
     printf("Encontrando o caminho...\n\n");
-
-    printf("%d\n\n\n", f->INICIO->ultimaPos);
     do
     {
         if (!f || !f->INICIO)
@@ -227,43 +227,38 @@ void loopDFS(int cubo[], PILHA *p)
     int profund = -1;
     int vetorMovimentos[20];
     int cubo_busca[24];
-
-
+    ht_t *ht = ht_create();
 
     printf("Encontrando o caminho...\n\n");
-    int cont = -1;
 
     do
     {
-        init_hash();
+        ht = ht_create();
         copia(cubo, cubo_busca);
-        //printf("Profund = %d\n", profund);
-        fflush(stdin);
-        //printf("Num de filhos = %d\n\n", numEstados);
-        profund = profund + 1;
-    }while(!iidfs(profund, p, cubo_busca) && profund < 15);
+    }while(!iidfs(profund++, p, cubo_busca, ht) && profund < 15);
 
     copia(cubo_busca, cubo);
 }
 
-int iidfs(int max, PILHA* p, int cubo[])
+int iidfs(int max, PILHA* p, int cubo[], ht_t *ht)
 {
-    int posicao, vetorMovimentos[20], montado;
+    int posicao, vetorMovimentos[20], montado = 0;
     numEstados = 0;
     Push(p, 0, 0, vetorMovimentos, cubo);
 
     do
     {
-
-        //printf("filho %d", p->topo->num);
         copia(p->topo->cubo, cubo);
 
-        // Visita estado do primeiro nó da fila
+        // Visita estado do primeiro nó da pilha
         if(p->topo->ultimaPos == max)
             montado = visitaEstadoDfs(p, cubo);
 
         if(montado){
-            return 1;}
+                printf("Montei\n");
+                imprime(cubo);
+            return 1;
+        }
 
         posicao = p->topo->ultimaPos;
 
@@ -274,12 +269,12 @@ int iidfs(int max, PILHA* p, int cubo[])
 
         // Gera sucessores usando o cubo atual
         if(posicao < max)
-        {
-            //current_generation++;
-            funcaoSucessoraDfs(p, posicao + 1, vetorMovimentos, cubo, max);
-        }
+            funcaoSucessoraDfs(p, posicao + 1, vetorMovimentos, cubo, max, ht);
 
         if(!p->topo)
+        {
+            ht_free(ht);
             return 0;
+        }
     } while (!montado);
 }
