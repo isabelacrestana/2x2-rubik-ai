@@ -23,10 +23,13 @@ uint32_t hash_cube(const CubeState cube) {
 
 typedef struct HashEntry {
     CubeState state;
-    struct HashEntry* next;   // encadeamento para tratar colisões
+    int depth;
+    struct HashEntry* next;
 } HashEntry;
 
 HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
+
+//int current_generation = 0;
 
 // Inicializa a hash table
 void init_hash() {
@@ -41,24 +44,29 @@ int compare_cubes(const CubeState a, const CubeState b) {
 }
 
 // Insere na tabela hash se não existir, retorna 1 se inseriu, 0 se já existia
-int insert_if_not_exists(const CubeState cube) {
+int insert_if_not_exists(const CubeState cube, int depth) {
     uint32_t h = hash_cube(cube) % TABLE_SIZE;
 
     HashEntry* curr = hash_table[h];
     while (curr) {
-        if (compare_cubes(curr->state, cube)) {
-            return 0; // Já existe
+        if (compare_cubes(curr->state, cube)){
+            if(curr->depth > depth) {
+                curr->depth = depth;
+                return -1;
+            }
+            return 0;
         }
         curr = curr->next;
     }
 
-    // cria novo nó para encadear
+    // Se o estado não foi encontrado, cria um novo nó para encadear
     HashEntry* new_entry = malloc(sizeof(HashEntry));
     if (!new_entry) {
         fprintf(stderr, "Erro de alocação\n");
         exit(1);
     }
     memcpy(new_entry->state, cube, sizeof(CubeState));
+    new_entry->depth = depth;
     new_entry->next = hash_table[h];
     hash_table[h] = new_entry;
 

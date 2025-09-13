@@ -11,7 +11,7 @@ int num = 0;
 typedef struct no
 {
     int movimentos[20];
-    int cubo_pai[24];
+    int cubo[24];
     int ultimaPos;
     int num;
     struct no *prox;  //aponta para o próx elemento
@@ -34,7 +34,7 @@ FILA* CriaFila()
     return f;
 }
 
-void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int cubo_pai[])
+void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int cubo[])
 {
     NO* novo;
     novo = (NO*) malloc(sizeof(NO));
@@ -47,16 +47,14 @@ void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int
         }
     }
 
-    novo->movimentos[indice] = movimento;
-    novo->num = num++;
-    if(cubo_pai)
-        copia(cubo_pai, novo->cubo_pai);
-    else
-        memset(novo->cubo_pai, 0, sizeof(novo->cubo_pai));
+    num++;
 
-   // printf("Movimento colocado = %d\n", novo->movimentos[indice]);
+    novo->movimentos[indice] = movimento;
+    novo->num = num;
+
+    copia(cubo, novo->cubo);
+
     novo->ultimaPos = indice;
-    //printf("indice = %d\n", novo->ultimaPos);
     novo->prox = NULL;
 
     if (!(f->INICIO == NULL))
@@ -77,7 +75,7 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
         movimentoDoVo = vetorMovimentos[indice - 2];
     }
 
-    for(int i = 1; i<7; i++)
+    for(int i = 6; i>0; i--)
     {
         //printf("movimento inserido = %d\n", f->FIM->movimentos[indice]);
         podeInserir = 1;
@@ -114,9 +112,9 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
             state[k] = (uint8_t)vetor[k];
 
         // só insere se não estiver na hash
-        if (insert_if_not_exists(state)) {
-            InsereFila(f, indice, i, vetorMovimentos, cubo_pai);
-}
+        if (insert_if_not_exists(state, indice)) {
+            InsereFila(f, indice, i, vetorMovimentos, vetor);
+        }
     }
 
     }
@@ -124,42 +122,11 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
 
 int visitaEstado(FILA* f, int cubo[])
 {
-    int ultimaPos = f->INICIO->ultimaPos;
-    int movimento = f->INICIO->movimentos[ultimaPos];
-
-    if(f->INICIO->ultimaPos > 0){
-        copia(f->INICIO->cubo_pai, cubo);
-    }
-
-    // Montando o cubo desse estado
-    realiza_mov(movimento, cubo);
-
     // Checando se está montado
     if(funcao_avaliadora(cubo))
         return 1;
 
     return 0;
-}
-
-int encontraPosicao(NO* primeiroDaLista)
-{
-    int indice = primeiroDaLista->ultimaPos;
-    int movimentoAnterior;
-
-    if(primeiroDaLista->movimentos[indice] != 0)
-    {
-        movimentoAnterior = primeiroDaLista->movimentos[indice];
-
-        // vendo se preciso voltar mais uma vez
-        if(indice < primeiroDaLista->prox->ultimaPos)
-        {
-            return indice+1;
-        }
-        return indice;
-    }
-
-    return 1;
-
 }
 
 int vetor(FILA *f, int vetorMovimentos[20])
