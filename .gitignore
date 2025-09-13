@@ -1,2 +1,10 @@
-/bin/*
-/obj/*
+# Ignora executáveis dentro de bin
+bin/*.exe
+bin/rubik
+# Mas não ignora o .gitkeep
+!bin/.gitkeep
+
+# Ignora .o dentro de obj
+obj/*.o
+# Mas não ignora o .gitkeep
+!obj/.gitkeep
