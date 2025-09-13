@@ -312,14 +312,10 @@ void realiza_mov(int mov, int v[24])
             break;
         }
 
-        case 7:
-        {
-            break;
-        }
-
         case 0:
         {
-            break;
+            printf("Saindo do programa...\n");
+            exit(1);
         }
     }
 }

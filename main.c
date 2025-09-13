@@ -5,7 +5,6 @@
 #include "funcoes cubo magico.h"
 #include "bibliotecas-buscas/bibliot-bfs.h"
 #include "bibliotecas-buscas/filaVisitados.h"
-#include "bibliotecas-buscas/hash.h"
 #include "bibliotecas-buscas/bibliot-dfs.h"
 #include "bibliotecas-buscas/newHash.h"
 
@@ -17,8 +16,6 @@ void menu(int matriz[][12]);
 int opcoesJogador(int v[24]);
 int aleatorio(int n_min, int n_max);
 int cuboInicial(int v[24]);
-
-//extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
 
 int main() {
     srand(time(NULL)); // Inicializa o gerador com o tempo atual
@@ -51,9 +48,6 @@ int main() {
 
     printf("\n\n                     BEM VINDO AO PROGRAMA (...)\n\n\n"
            "                  Pressione qualquer tecla para iniciar...");
-
-    init_hash();
-
     getch();
 
     // por enquanto so temos a opcao 1
@@ -65,7 +59,7 @@ int main() {
                "                  Selecione uma das opcoes:\n"
                "                  1. Quero eu mesmo(a) montar o cubo\n"
                "                  2. Busca em Largura\n"
-               "                  3. Busca em Profundidade Limitada\n"
+               "                  3. Busca em Profundidade Iterativa\n"
                "                  ");
         scanf("%d", &opc);
     }while(opc<1 && opc>3);
@@ -187,21 +181,22 @@ int opcoesJogador(int v[24])
 
 void bfs(int cubo[24], FILA* f)
 {
-    int montado;
+    int montado=0;
     int vetorMovimentos[20];
     int posicao;
+    ht_t *ht = ht_create();
 
     // Inserindo nó inicial
     InsereFila(f, 0, 0, vetorMovimentos, cubo);
+    ht_set(ht, cubo, 0);
 
     printf("Encontrando o caminho...\n\n");
     do
     {
         if (!f || !f->INICIO)
             break;
+
         copia(f->INICIO->cubo, cubo);
-
-
         // Visita estado do primeiro nó da fila
         montado = visitaEstado(f, cubo);
 
@@ -213,11 +208,9 @@ void bfs(int cubo[24], FILA* f)
 
             // Remove o nó atual da fila
             RemoveFila(f);
-
-            if(posicao == 15)
-                return;
             // Gera sucessores usando o cubo atual
-            funcaoSucessora(f, posicao, vetorMovimentos, cubo);
+            if(posicao < 15)
+                funcaoSucessora(f, posicao, vetorMovimentos, cubo, ht);
         }
     } while (!montado);
 }
@@ -254,11 +247,8 @@ int iidfs(int max, PILHA* p, int cubo[], ht_t *ht)
         if(p->topo->ultimaPos == max)
             montado = visitaEstadoDfs(p, cubo);
 
-        if(montado){
-                printf("Montei\n");
-                imprime(cubo);
+        if(montado)
             return 1;
-        }
 
         posicao = p->topo->ultimaPos;
 

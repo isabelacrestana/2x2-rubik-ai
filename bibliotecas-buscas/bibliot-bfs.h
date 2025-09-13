@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "../funcoes cubo magico.h"
 #include "filaVisitados.h"
-#include "hash.h"
+#include "newHash.h"
 
 int num = 0;
 //Estrutura dos elementos da fila
@@ -65,7 +65,7 @@ void InsereFila(FILA* f, int indice, int movimento, int vetorMovimentos[20], int
         f->INICIO = f->FIM;
 }
 
-void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[24])
+void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[24], ht_t* ht)
 {
     int movimentoDoPai, movimentoDoVo, vetor[24], podeInserir;
     movimentoDoPai = vetorMovimentos[indice - 1];
@@ -102,21 +102,17 @@ void funcaoSucessora(FILA* f, int indice, int vetorMovimentos[20], int cubo_pai[
         }
 
         if (podeInserir) {
-        // monta o cubo do filho
-        copia(cubo_pai, vetor);
-        realiza_mov(i, vetor);
+            // monta o cubo do filho
+            copia(cubo_pai, vetor);
+            realiza_mov(i, vetor);
 
-        // converte pra CubeState
-        CubeState state;
-        for (int k = 0; k < 24; k++)
-            state[k] = (uint8_t)vetor[k];
-
-        // só insere se não estiver na hash
-        if (insert_if_not_exists(state, indice)) {
-            InsereFila(f, indice, i, vetorMovimentos, vetor);
+            // só insere se não estiver na hash
+            // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
+            if (!ht_get(ht, vetor, 0)) {
+                InsereFila(f, indice, i, vetorMovimentos, vetor);
+                ht_set(ht, vetor, 0);
+            }
         }
-    }
-
     }
 }
 

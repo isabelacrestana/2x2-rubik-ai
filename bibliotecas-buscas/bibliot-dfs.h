@@ -4,10 +4,7 @@
 #include <stdlib.h>
 #include "../funcoes cubo magico.h"
 #include "filaVisitados.h"
-#include "hash.h"
 #include "newHash.h"
-
-//extern HashEntry* hash_table[TABLE_SIZE];  // cada posição é uma lista ligada
 
 int numEstados =0;
 /* Criando uma bibioteca de manipulação de pilhas em C */
