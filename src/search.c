@@ -3,7 +3,31 @@
 #include "stack.h"
 #include "queue.h"
 #include "hash-table.h"
+#include "print.h"
 #include "rubik-functions.h"
+
+void run_search(int cube[], int search_type) {
+    QUEUE* q = queue_new();
+    STACK* s = stack_new();
+
+    if(search_type == 2) {  // BFS
+        bfs(cube, q);
+        printf("\n\nFim da busca bfs!\n\n");
+        if(!q->INICIO)
+            printf("\nNao foi encontrado um caminho. Cubo invalido.\n");
+        else
+            show_search_result(q->INICIO, search_type);
+        queue_free(q);
+    } else {  // DFS
+        loopDFS(cube, s);
+        printf("\n\nFim da busca dfs iterativa!\n\n");
+        if(!s->topo)
+            printf("\nNao foi encontrado um caminho. Cubo invalido.\n");
+        else
+            show_search_result(s->topo, search_type);
+        stack_free(s);
+    }
+}
 
 void bfs(int cube[], QUEUE* q)
 {

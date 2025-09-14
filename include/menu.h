@@ -3,7 +3,7 @@
 
 
 int main_menu(int cube[]);
-
+void run_free_mode(int cube[]);
 int free_mode_menu(int cube[]);
 
 

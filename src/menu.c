@@ -22,6 +22,15 @@ int main_menu(int cube[])
     return opc;
 }
 
+
+void run_free_mode(int cube[]) {
+    int opc;
+    do{
+        opc = free_mode_menu(cube);
+        apply_move(opc, cube);
+    }while(!evaluete_state(cube));
+}
+
 int free_mode_menu(int cube[])
 {
     int opc;

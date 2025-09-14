@@ -1,5 +1,19 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "print.h"
+#include "queue.h"
+#include "stack.h"
+
+void welcome_screen() {
+    printf("\n\nPressione ENTER...");
+    getchar();
+    system("clear");
+
+    printf("\n\n                     BEM VINDO AO PROGRAMA (...)\n\n\n"
+           "                  Pressione ENTER para iniciar...");
+    getchar();
+}
 
 void print_mov(int mov)
 {
@@ -43,4 +57,24 @@ void print_mov(int mov)
 
 
     }
+}
+
+void show_search_result(NODE* answer, int ai_type){
+    int depth = answer->depth;
+    printf("profundidade final = %d\n\n", depth);
+    printf("Passo a passo ate a resposta:\n");
+    for(int i = 1; i<depth + 1; i++)
+    {
+        printf("%d. ", i);
+        print_mov(answer->movs[i]);
+    }
+
+    // it means that it was a bfs search
+    if(ai_type == 2)
+        printf("\nNum de estados gerados = %d\n", num);
+
+    // it means that it was a iidfs search
+    else
+        printf("\nNum de estados gerados = %d\n", numEstados);
+
 }

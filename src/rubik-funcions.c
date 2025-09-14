@@ -2,16 +2,22 @@
 #include <stdlib.h>
 #include "rubik-functions.h"
 
+void initialize_cubes(int cube[], int initialCube[])
+{
+    vetorResposta(cube);
+    cp(cube, initialCube);
+}
+
 void vetorResposta(int v[])
 {
-    //int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
+    int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
 
     //tava testando esse
     //int vetor[24] = {1,4,6,1,3,1,5,6,4,5,2,3,2,4,5,2,3,6,5,6,1,2,4,3};
 
     //esse eh o de 14 movimentos
     //int vetor[24] = {1,2,1,1,  6,3,4,6,   5,3,4,3,   4,5,4,6,   5,2,2,3,   2,5,6,1};
-    int vetor[24] = {1,6,5,2,    2,4,2,5,   6,2,3,6,    6,4,3,3,    3,1,5,1,  4,1,4,2};
+    //int vetor[24] = {1,6,5,5,    2,4,2,5,   6,2,3,6,    6,4,3,3,    3,1,5,1,  4,1,4,2};
     cp(vetor, v);
 
 }

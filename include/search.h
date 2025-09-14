@@ -4,6 +4,7 @@
 #include "stack.h"
 #include "hash-table.h"
 
+void run_search(int cube[], int search_type);
 void bfs(int cubo[], QUEUE* f);
 void loopDFS(int cubo[], STACK *p);
 int iidfs(int max_depth, STACK* s, int cube[], ht_t *ht);
