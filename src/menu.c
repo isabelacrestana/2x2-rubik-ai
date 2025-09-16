@@ -4,7 +4,6 @@
 
 int main_menu(int cube[])
 {
-    int intOpc;
     char charOpc;
 
     do{

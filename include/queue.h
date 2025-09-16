@@ -26,7 +26,7 @@ void enqueue(QUEUE* q, int depth, int mov, int movs[], int cube[]);
 void generate_successors(QUEUE* q, int depth, int movs[], int parent_cube[], ht_t* ht);
 int visit_state(NODE *visited);
 void cp_movs(NODE *source, int target[]);
-void dequeue(QUEUE* q);
+NODE* dequeue(QUEUE* q);
 QUEUE* queue_free(QUEUE* q);
 
 

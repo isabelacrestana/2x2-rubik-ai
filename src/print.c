@@ -4,6 +4,7 @@
 #include "print.h"
 #include "queue.h"
 #include "stack.h"
+#include "rubik-functions.h"
 
 void welcome_screen() {
     printf("\n\nPressione ENTER...");
@@ -59,7 +60,7 @@ void print_mov(int mov)
     }
 }
 
-void show_search_result(NODE* answer, int ai_type){
+void show_search_result(NODE* answer, int ai_type, int *cube){
     int depth = answer->depth;
     printf("profundidade final = %d\n\n", depth);
     printf("Passo a passo ate a resposta:\n");
@@ -76,5 +77,11 @@ void show_search_result(NODE* answer, int ai_type){
     // it means that it was a iidfs search
     else
         printf("\nNum de estados gerados = %d\n", numEstados);
+
+    printf("\n\n                 ---Cubo embaralhado---\n\n");
+    ui(cube);
+    printf("\n\n\n                   ---Cubo montado---\n\n");
+    ui(answer->cube);
+    printf("\n\n");
 
 }

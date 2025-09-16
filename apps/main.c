@@ -33,11 +33,5 @@ int main() {
     else 
         run_search(rubik, opc);
 
-    printf("\n\n                 ---Cubo embaralhado---\n\n");
-    ui(initialCube);
-    printf("\n\n\n                   ---Cubo montado---\n\n");
-    ui(rubik);
-    printf("\n\n");
-
     return 0;
 }

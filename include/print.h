@@ -5,6 +5,6 @@
 
 void welcome_screen();
 void print_mov(int mov);
-void show_search_result(NODE* answer, int ai_type);
+void show_search_result(NODE* answer, int ai_type, int *cube);
 
 #endif // PRINT_H_INCLUDED

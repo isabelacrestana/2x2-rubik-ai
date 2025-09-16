@@ -117,9 +117,9 @@ void cp_movs(NODE *source, int target[])
     }
 }
 
-void dequeue(QUEUE* q)
+NODE* dequeue(QUEUE* q)
 {
-    NODE* aux = q->front;
+    NODE* temp = q->front;
 
     if (q->front == NULL)
     {
@@ -127,14 +127,14 @@ void dequeue(QUEUE* q)
         exit(1);
     }
 
-    aux = aux->next;
-    free(q->front);
-    q->front = aux;
+    q->front = temp->next;
 
-    if (aux == NULL)
+    if (q->front == NULL)
     {
         q->rear = NULL;
     }
+
+    return temp;
 }
 
 QUEUE* queue_free(QUEUE* q)
