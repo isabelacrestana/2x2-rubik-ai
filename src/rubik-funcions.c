@@ -1,43 +1,30 @@
-#ifndef FUNCOES_CUBO_MAGICO_H_INCLUDED
-#define FUNCOES_CUBO_MAGICO_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
+#include "rubik-functions.h"
 
-// prototipos das funcoes
-void copia(int origem[24], int destino[24]);
-
-void vetorResposta(int v[24])
+void initSolvedCube(int v[])
 {
+    // 1: BRANCO
+    // 2: VERMELHO
+    // 3: AMARELO
+    // 4: LARANJA
+    // 5: AZUL
+    // 6: VERDE
     //int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
-
-    //int vetor[24] = {1,4,2,6,  6,6,1,5,  3,3,3,3,   4,4,4,5,   5,2,5,1,   1,2,6,2};
-
-     //int vetor[24] = {01, 05 ,01, 05, 02, 02, 02, 02, 06, 03, 06, 03, 04, 04, 04, 04, 05, 03, 05, 03, 06, 01, 06,01};
-
-    //int vetor[24] = {01, 06, 02, 02, 02, 02, 05, 03, 05, 03, 04, 04, 04, 04, 01, 06, 05, 01, 05, 01, 03, 03, 06, 06};
-
-    //int vetor[24] = {01, 06, 05, 03, 02, 03 ,04 ,02, 04, 01, 05, 02, 04, 04, 03, 01, 06, 05, 05, 01, 02 ,06, 06,03};
+    int vetor[24] = {1,6,5,4,  3,2,1,3,  5,1,2,3,  6,4,4,3,  2,1,5,2,  4,6,6,5};
 
     //tava testando esse
     //int vetor[24] = {1,4,6,1,3,1,5,6,4,5,2,3,2,4,5,2,3,6,5,6,1,2,4,3};
 
     //esse eh o de 14 movimentos
     //int vetor[24] = {1,2,1,1,  6,3,4,6,   5,3,4,3,   4,5,4,6,   5,2,2,3,   2,5,6,1};
-
-    //int vetor[24] = {1,3,5,6,   2,6,1,3,   1,4,5,2,   3,4,5,1,   6,4,5,6,  2,2,3,4};
-     int vetor[24] = {1,6,5,5,    2,4,2,5,   6,2,3,6,    6,4,3,3,    3,1,5,1,  4,1,4,2};
-
-    //int vetor[24] = {1,4,5,6,6,4,1,3,5,5,4,3,1,4,6,2,2,3,5,1,3,2,2,6};
-    //int vetor[24] = {1,6,6,2,3,6,5,4,2,2,6,5,5,4,4,1,1,1,5,2,4,3,3,3};
-
-    //int vetor[24] = {1,2,1,2,   5,4,5,4,   3,4,3,6,  6,4,2,6,   1,6,5,1   ,2,3,3,5};
-
-    copia(vetor, v);
+    //int vetor[24] = {1,6,5,5,    2,4,2,5,   6,2,3,6,    6,4,3,3,    3,1,5,1,  4,1,4,2};
+    cp(vetor, v);
 
 }
 
 
-void imprime(int vetor[24])
+void imprime(int vetor[])
 {
     for(int i = 0; i<24; i++)
     {
@@ -45,7 +32,7 @@ void imprime(int vetor[24])
     }
 }
 
-void cld(int v[24])
+void cld(int v[])
 {
     int aux,aux2;
 
@@ -75,7 +62,7 @@ void cld(int v[24])
     v[6] = aux;
 }
 
-void bld(int v[24])
+void bld(int v[])
 {
     int aux1, aux2, aux3, aux4;
 
@@ -107,7 +94,7 @@ void bld(int v[24])
     v[19] = aux1;
 }
 
-void bsa(int v[24])
+void bsa(int v[])
 {
     int aux1, aux2, aux3, aux4;
 
@@ -140,7 +127,7 @@ void bsa(int v[24])
     v[15] = aux2;
 }
 
-void bsh(int v[24])
+void bsh(int v[])
 {
     int aux1, aux2, aux3, aux4;
 
@@ -173,7 +160,7 @@ void bsh(int v[24])
     v[7] = aux2;
 }
 
-void tsa(int v[24])
+void tsa(int v[])
 {
     int aux1, aux2, aux3, aux4;
     aux1 = v[8];
@@ -202,7 +189,7 @@ void tsa(int v[24])
     v[14] = aux1;
 }
 
-void tsh(int v[24])
+void tsh(int v[])
 {
     int aux1,aux2,aux3,aux4;
     aux1 = v[8];
@@ -231,7 +218,7 @@ void tsh(int v[24])
 }
 
 // Funcao que imprime o cubo para o jogador
-void interfaceGrafica(int v[24])
+void ui(int v[])
 {
     printf("                        +---------+ \n"
            "                       / %02d   %02d / |\n"
@@ -250,29 +237,18 @@ void interfaceGrafica(int v[24])
            v[3], v[6]);
 }
 
-int face_montada(int v[24], int face)
+int evaluete_state(int v[])
 {
-    for(int i = 0; i<3; i++)
-    {
-        if(v[i]!=v[i+1])
-            return 0;
-    }
-
-    return 1;
-}
-
-int funcao_avaliadora(int v[24])
-{
-    for(int i = 0; i < 24; i += 4) // cada 4 posições é uma face
+    for(int i = 0; i < 24; i += 4) // cada 4 posiÃ§Ãµes Ã© uma face
     {
         if(v[i] != v[i+1] || v[i] != v[i+2] || v[i] != v[i+3])
-            return 0; // face não está montada
+            return 0; // face nÃ£o estÃ¡ montada
     }
 
     return 1; // todas as faces montadas
 }
 
-void realiza_mov(int mov, int v[24])
+void apply_move(int mov, int v[])
 {
     switch(mov)
     {
@@ -320,55 +296,35 @@ void realiza_mov(int mov, int v[24])
     }
 }
 
-void copia(int origem[24], int destino[24])
+void cp(int source[], int target[])
 {
     for(int i = 0; i<24; i++)
     {
-        destino[i] = origem[i];
+        target[i] = source[i];
     }
 }
 
-void printMovimentos(int mov)
+int random_num(int n_min, int n_max)
 {
-     switch(mov)
+    return rand() % (n_max - n_min + 1) + n_min;
+}
+
+// funcao que embaralha o cubo a partir da matriz resposta
+void random_rubik(int v[])
+{
+    int previous = 0, num;
+    int mov;
+    initSolvedCube(v);
+    num = random_num(12,12);
+
+    while(num > 0)
     {
-        case 1:
+        mov = random_num(1,6);   // dps adicionar todos os 6 movimentos (por enquanto so temos esses)
+        if(mov != previous)
         {
-            printf("Rodar lado direito para cima\n");
-            break;
+           apply_move(mov, v);
+           previous = num;
+           num--;
         }
-
-        case 2:
-        {
-            printf("Rodar lado direito para baixo\n");
-            break;
-        }
-
-        case 3:
-        {
-            printf("Rodar base no sentido anti-horario\n");
-            break;
-        }
-
-        case 4:
-        {
-            printf("Rodar base no sentido horario\n");
-            break;
-        }
-
-        case 5:
-        {
-            printf("Rodar parte de tras no sentido horario\n");
-            break;
-        }
-
-        case 6:
-        {
-            printf("Rodar parte de tras no sentido anti-horario\n");
-            break;
-        }
-
-
     }
 }
-#endif // FUNCOES_CUBO_MAGICO_H_INCLUDED

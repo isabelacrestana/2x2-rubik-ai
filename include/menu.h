@@ -1,0 +1,10 @@
+#ifndef MENU_H_INCLUDED
+#define MENU_H_INCLUDED
+
+
+int main_menu(int cube[]);
+void run_free_mode(int cube[]);
+int free_mode_menu(int cube[]);
+
+
+#endif // MENU_H_INCLUDED

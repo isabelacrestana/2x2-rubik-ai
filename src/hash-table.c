@@ -1,25 +1,10 @@
-#ifndef NEWHASH_H_INCLUDED
-#define NEWHASH_H_INCLUDED
-
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "hash-table.h"
 
-#define TABLE_SIZE 7348321
-#define CUBE_SIZE 24      // tamanho do cubo 2x2x2
-
-typedef struct entry_t {
-    int cube[CUBE_SIZE];     // estado do cubo
-    struct entry_t *next;    // próximo da lista em caso de colisão
-    int depth;
-} entry_t;
-
-typedef struct {
-    entry_t **entries;
-} ht_t;
-
-// Função hash para o cubo
+// Funcao hash para o cubo
 unsigned int hash_cube2(const int cube[CUBE_SIZE]) {
     unsigned long value = 0;
     for(int i = 0; i < CUBE_SIZE; i++) {
@@ -46,10 +31,9 @@ int cube_equal(const int a[CUBE_SIZE], const int b[CUBE_SIZE]) {
     return 1;
 }
 
-// Inserção na tabela hash
+// Inserï¿½ï¿½o na tabela hash
 void ht_set(ht_t *hashtable, const int cube[CUBE_SIZE], int depth) {
     unsigned int slot = hash_cube2(cube);
-    entry_t *entry = hashtable->entries[slot];
 
     // Cria nova entrada
     entry_t *new_entry = malloc(sizeof(entry_t));
@@ -79,10 +63,10 @@ int ht_get(ht_t *hashtable, const int cube[CUBE_SIZE], const int depth) {
         }
         entry = entry->next;
     }
-    return 0; // não encontrado
+    return 0; // nï¿½o encontrado
 }
 
-// Libera a memória da tabela hash
+// Libera a memï¿½ria da tabela hash
 void ht_free(ht_t *hashtable) {
     for(int i = 0; i < TABLE_SIZE; i++) {
         entry_t *entry = hashtable->entries[i];
@@ -95,26 +79,3 @@ void ht_free(ht_t *hashtable) {
     free(hashtable->entries);
     free(hashtable);
 }
-
-// Exemplo de uso
-/*int main() {
-    ht_t *ht = ht_create();
-
-    int cube1[CUBE_SIZE] = {0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5};
-    int cube2[CUBE_SIZE] = {1,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5};
-
-    ht_set(ht, cube1);
-    ht_set(ht, cube2);
-
-    if(ht_get(ht, cube1)) {
-        printf("cube1 encontrado!\n");
-    }
-    if(ht_get(ht, cube2)) {
-        printf("cube2 encontrado!\n");
-    }
-
-    ht_free(ht);
-    return 0;
-}
-*/
-#endif // NEWHASH_H_INCLUDED
