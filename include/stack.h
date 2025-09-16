@@ -7,10 +7,10 @@
 
 extern int numEstados;
 
-// Estrutura que guarda o endereço do primeiro elemento do tipo struct NO
+// Estrutura que guarda o endereï¿½o do primeiro elemento do tipo struct NO
 typedef struct Stack
 {
-    NODE *topo;
+    NODE *top;
 } STACK;
 
 STACK* stack_new();

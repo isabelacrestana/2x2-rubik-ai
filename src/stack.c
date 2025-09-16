@@ -9,7 +9,7 @@ int numEstados = 0;
 STACK* stack_new()
 {
     STACK* s = (STACK*) malloc(sizeof(STACK));
-    s->topo = NULL;  // aponta inicialmente para um endereço nulo
+    s->top = NULL;  // aponta inicialmente para um endereço nulo
     return s;   //retorna o endereço
 }
 
@@ -33,9 +33,9 @@ void push(STACK* s, int depth, int mov, int movs[], int cube[])
     cp(cube, new_node->cube);
 
     new_node->depth = depth;
-    new_node->next = s->topo;
+    new_node->next = s->top;
 
-    s->topo = new_node;
+    s->top = new_node;
 }
 
 void stack_generate_successors(STACK* s, int depth, int movs[], int parent_cube[], ht_t *ht)
@@ -95,21 +95,21 @@ void stack_generate_successors(STACK* s, int depth, int movs[], int parent_cube[
 
 NODE* pop(STACK* s)
 {
-    if (s->topo == NULL)
+    if (s->top == NULL)
     {
         printf("Pilha Vazia...");
         exit(1);
     }
 
-    NODE* aux = s->topo;
+    NODE* aux = s->top;
 
-    s->topo = s->topo->next;
+    s->top = s->top->next;
     return aux;
 }
 
 STACK* stack_free(STACK* s)
 {
-    NODE* aux = s->topo;  // aux recebe o endereço do topo da pilha
+    NODE* aux = s->top;  // aux recebe o endereço do top da pilha
 
     while(aux != NULL)    //loop que desaloca elemento por elemento
     {
@@ -118,7 +118,7 @@ STACK* stack_free(STACK* s)
         aux = n;              //aux recebe end do próximo elemento
     }
 
-    free(s);  //Libera estutura que guardava o end do topo da pilha
+    free(s);  //Libera estutura que guardava o end do top da pilha
     return NULL;   // Pilha aponta para nulo
 }
 

@@ -4,8 +4,7 @@
 #include <stdlib.h>
 
 // prototipos das funcoes
-void initialize_cubes(int cube[], int initialCube[]);
-void vetorResposta(int v[]);
+void initSolvedCube(int v[]);
 void imprime(int v[]);
 void cld(int v[]);
 void bld(int v[]);

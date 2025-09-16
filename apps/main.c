@@ -12,12 +12,12 @@ int main() {
 
     int rubik[24], initialCube[24], opc;
 
-    vetorResposta(rubik);
+    initSolvedCube(rubik);
     printf("\n\nCubo antes de embaralhar:\n");
     ui(rubik);
 
     printf("\n\nCubo depois de embaralhar\n");
-    random_rubik(rubik);
+    //random_rubik(rubik);
     cp(rubik, initialCube);
     ui(rubik);
 

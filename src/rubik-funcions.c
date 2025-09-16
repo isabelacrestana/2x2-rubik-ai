@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include "rubik-functions.h"
 
-void initialize_cubes(int cube[], int initialCube[])
+void initSolvedCube(int v[])
 {
-    vetorResposta(cube);
-    cp(cube, initialCube);
-}
-
-void vetorResposta(int v[])
-{
-    int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
+    // 1: BRANCO
+    // 2: VERMELHO
+    // 3: AMARELO
+    // 4: LARANJA
+    // 5: AZUL
+    // 6: VERDE
+    //int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
+    int vetor[24] = {1,6,5,4,  3,2,1,3,  5,1,2,3,  6,4,4,3,  2,1,5,2,  4,6,6,5};
 
     //tava testando esse
     //int vetor[24] = {1,4,6,1,3,1,5,6,4,5,2,3,2,4,5,2,3,6,5,6,1,2,4,3};
@@ -313,7 +314,7 @@ void random_rubik(int v[])
 {
     int previous = 0, num;
     int mov;
-    vetorResposta(v);
+    initSolvedCube(v);
     num = random_num(12,12);
 
     while(num > 0)

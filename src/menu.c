@@ -4,7 +4,8 @@
 
 int main_menu(int cube[])
 {
-    int opc;
+    int intOpc;
+    char charOpc;
 
     do{
         //system("cls");
@@ -15,11 +16,13 @@ int main_menu(int cube[])
                "                  1. Quero eu mesmo(a) montar o cubo\n"
                "                  2. Busca em Largura\n"
                "                  3. Busca em Profundidade Iterativa\n"
+               "                  4. A*\n"
                "                  ");
-        scanf("%d", &opc);
-    }while(opc<1 && opc>3);
+        charOpc = getchar();
+        getchar();
+    }while(charOpc<'1' || charOpc>'4');
 
-    return opc;
+    return charOpc - '0';
 }
 
 

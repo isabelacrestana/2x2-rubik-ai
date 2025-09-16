@@ -13,18 +13,18 @@ void run_search(int cube[], int search_type) {
     if(search_type == 2) {  // BFS
         bfs(cube, q);
         printf("\n\nFim da busca bfs!\n\n");
-        if(!q->INICIO)
+        if(!q->front)
             printf("\nNao foi encontrado um caminho. Cubo invalido.\n");
         else
-            show_search_result(q->INICIO, search_type);
+            show_search_result(q->front, search_type);
         queue_free(q);
     } else {  // DFS
         loopDFS(cube, s);
         printf("\n\nFim da busca dfs iterativa!\n\n");
-        if(!s->topo)
+        if(!s->top)
             printf("\nNao foi encontrado um caminho. Cubo invalido.\n");
         else
-            show_search_result(s->topo, search_type);
+            show_search_result(s->top, search_type);
         stack_free(s);
     }
 }
@@ -35,6 +35,7 @@ void bfs(int cube[], QUEUE* q)
     int movs[15];
     int depth;
     ht_t *ht = ht_create();
+    NODE *removed;
 
     // Inserindo nó inicial
     enqueue(q, 0, 0, movs, cube);
@@ -43,18 +44,18 @@ void bfs(int cube[], QUEUE* q)
     printf("Encontrando o caminho...\n\n");
     do
     {
-        if (!q || !q->INICIO)
+        if (!q || !q->front)
             break;
 
-        cp(q->INICIO->cube, cube);
+        cp(q->front->cube, cube);
         // Visita estado do primeiro nó da fila
-        is_solved = visit_state(q->INICIO);
+        is_solved = visit_state(q->front);
 
         if (!is_solved)
         {
             // Atualiza vetor de movimentos
-            cp_movs(q->INICIO, movs);
-            depth =  q->INICIO->depth + 1;
+            cp_movs(q->front, movs);
+            depth =  q->front->depth + 1;
 
             // Remove o nó atual da fila
             dequeue(q);
@@ -90,19 +91,19 @@ int iidfs(int max_depth, STACK* s, int cube[], ht_t *ht)
 
     do
     {
-        cp(s->topo->cube, cube);
+        cp(s->top->cube, cube);
 
         // Visita estado do primeiro nó da pilha
-        if(s->topo->depth == max_depth)
-            is_solved = visit_state(s->topo);
+        if(s->top->depth == max_depth)
+            is_solved = visit_state(s->top);
 
         if(is_solved)
             return 1;
 
-        depth = s->topo->depth;
+        depth = s->top->depth;
 
         // Atualiza vetor de movimentos
-        cp_movs(s->topo, movs);
+        cp_movs(s->top, movs);
 
         pop(s);
 
@@ -110,7 +111,7 @@ int iidfs(int max_depth, STACK* s, int cube[], ht_t *ht)
         if(depth < max_depth)
             stack_generate_successors(s, depth+1, movs, cube, ht);
 
-        if(!s->topo)
+        if(!s->top)
         {
             ht_free(ht);
             return 0;

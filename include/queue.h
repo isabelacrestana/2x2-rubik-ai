@@ -12,13 +12,13 @@ typedef struct node
     int cube[24];
     int depth;
     int num;
-    struct node *next;  //aponta para o próx elemento
+    struct node *next;  //aponta para o prï¿½x elemento
 } NODE;
 
 typedef struct Queue
 {
-    NODE *INICIO;
-    NODE *FIM;
+    NODE *front;
+    NODE *rear;
 } QUEUE;
 
 QUEUE* queue_new();

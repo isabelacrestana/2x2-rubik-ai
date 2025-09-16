@@ -9,8 +9,8 @@ QUEUE* queue_new()
 {
     QUEUE *q;
     q = (QUEUE*) malloc(sizeof(QUEUE));
-    q -> INICIO = NULL;
-    q -> FIM = NULL;
+    q -> front = NULL;
+    q -> rear = NULL;
     return q;
 }
 
@@ -37,12 +37,12 @@ void enqueue(QUEUE* q, int depth, int mov, int movs[], int cube[])
     new_node->depth = depth;
     new_node->next = NULL;
 
-    if (!(q->INICIO == NULL))
-        q->FIM->next = new_node;
-    q->FIM = new_node;
+    if (!(q->front == NULL))
+        q->rear->next = new_node;
+    q->rear = new_node;
 
-    if (q->INICIO == NULL)
-        q->INICIO = q->FIM;
+    if (q->front == NULL)
+        q->front = q->rear;
 }
 
 void generate_successors(QUEUE* q, int depth, int movs[], int parent_cube[], ht_t* ht)
@@ -57,7 +57,7 @@ void generate_successors(QUEUE* q, int depth, int movs[], int parent_cube[], ht_
 
     for(int i = 6; i>0; i--)
     {
-        //printf("movimento inserido = %d\n", f->FIM->movimentos[indice]);
+        //printf("movimento inserido = %d\n", f->rear->movimentos[indice]);
         canInsert = 1;
         if(depth>2)
         {
@@ -119,27 +119,27 @@ void cp_movs(NODE *source, int target[])
 
 void dequeue(QUEUE* q)
 {
-    NODE* aux = q->INICIO;
+    NODE* aux = q->front;
 
-    if (q->INICIO == NULL)
+    if (q->front == NULL)
     {
         printf("Fila vazia...");
         exit(1);
     }
 
     aux = aux->next;
-    free(q->INICIO);
-    q->INICIO = aux;
+    free(q->front);
+    q->front = aux;
 
     if (aux == NULL)
     {
-        q->FIM = NULL;
+        q->rear = NULL;
     }
 }
 
 QUEUE* queue_free(QUEUE* q)
 {
-    NODE* q_node = q->INICIO;
+    NODE* q_node = q->front;
     NODE* aux = q_node;
 
     while (q_node)
