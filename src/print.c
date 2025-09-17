@@ -61,27 +61,21 @@ void print_mov(int mov)
 }
 
 void show_search_result(NODE* answer, int ai_type, int *cube){
-    int depth = answer->depth;
+    int depth = answer->info.depth;
     printf("profundidade final = %d\n\n", depth);
     printf("Passo a passo ate a resposta:\n");
     for(int i = 1; i<depth + 1; i++)
     {
         printf("%d. ", i);
-        print_mov(answer->movs[i]);
+        print_mov(answer->info.movs[i]);
     }
 
-    // it means that it was a bfs search
-    if(ai_type == 2)
-        printf("\nNum de estados gerados = %d\n", num);
-
-    // it means that it was a iidfs search
-    else
-        printf("\nNum de estados gerados = %d\n", numEstados);
+    printf("\nNum de estados gerados = %d\n", num);
 
     printf("\n\n                 ---Cubo embaralhado---\n\n");
     ui(cube);
     printf("\n\n\n                   ---Cubo montado---\n\n");
-    ui(answer->cube);
+    ui(answer->info.cube);
     printf("\n\n");
 
 }

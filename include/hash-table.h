@@ -6,7 +6,7 @@
 
 typedef struct entry_t {
     int cube[CUBE_SIZE];     // estado do cubo
-    struct entry_t *next;    // próximo da lista em caso de colisão
+    struct entry_t *next;    // prï¿½ximo da lista em caso de colisï¿½o
     int depth;
 } entry_t;
 
@@ -14,21 +14,23 @@ typedef struct {
     entry_t **entries;
 } ht_t;
 
-// Função hash para o cubo
-unsigned int hash_cube2(const int cube[CUBE_SIZE]);
+// Funï¿½ï¿½o hash para o cubo
+unsigned int hash_cube(const int cube[CUBE_SIZE]);
 
 ht_t *ht_create(void);
 
 // Compara dois estados do cubo
 int cube_equal(const int a[CUBE_SIZE], const int b[CUBE_SIZE]);
 
-// Inserção na tabela hash
+// Inserï¿½ï¿½o na tabela hash
 void ht_set(ht_t *hashtable, const int cube[CUBE_SIZE], int depth);
 
 // Busca na tabela hash
-int ht_get(ht_t *hashtable, const int cube[CUBE_SIZE], const int depth);
+int ht_get(ht_t *hashtable, int cube[CUBE_SIZE], const int depth);
 
-// Libera a memória da tabela hash
+// Libera a memï¿½ria da tabela hash
 void ht_free(ht_t *hashtable);
+
+int get_heuristic_value(ht_t *lookupTb, int *cube);
 
 #endif // NEWHASH_H_INCLUDED

@@ -8,3 +8,5 @@ bin/rubik
 obj/*.o
 # Mas não ignora o .gitkeep
 !obj/.gitkeep
+
+*.bin

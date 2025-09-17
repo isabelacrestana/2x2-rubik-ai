@@ -2,6 +2,7 @@
 #include "queue.h"
 #include "rubik-functions.h"
 #include "hash-table.h"
+#include "common.h"
 
 int num = 0;
 
@@ -14,106 +15,111 @@ QUEUE* queue_new()
     return q;
 }
 
-void enqueue(QUEUE* q, int depth, int mov, int movs[], int cube[])
+void enqueue(QUEUE* q, NODE* newNode)
 {
-    NODE* new_node;
-    new_node = (NODE*) malloc(sizeof(NODE));
-
-    if(depth>0)
-    {
-        for(int i = 0; i<depth; i++)
-        {
-            new_node->movs[i] = movs[i];
-        }
-    }
-
-    num++;
-
-    new_node->movs[depth] = mov;
-    new_node->num = num;
-
-    cp(cube, new_node->cube);
-
-    new_node->depth = depth;
-    new_node->next = NULL;
-
     if (!(q->front == NULL))
-        q->rear->next = new_node;
-    q->rear = new_node;
+        q->rear->next = newNode;
+    q->rear = newNode;
 
     if (q->front == NULL)
         q->front = q->rear;
 }
 
-void generate_successors(QUEUE* q, int depth, int movs[], int parent_cube[], ht_t* ht)
+void enqueueSorted(QUEUE* q, NODE* newNode, int fCost)
 {
-    int parent_mov, grandparent_mov, cube[24], canInsert;
-    parent_mov = movs[depth - 1];
-
-    if(depth>2)
+    // Se a fila estiver vazia, insira o primeiro elemento.
+    if (!q->front)
     {
-        grandparent_mov = movs[depth - 2];
+        q->front = newNode;
+        q->rear = newNode;
+        newNode->next = NULL; // Garantir que o next seja nulo
+        return;
     }
 
-    for(int i = 6; i>0; i--)
+    NODE* previous = NULL;
+    NODE* current = q->front;
+
+    // Percorre a fila até encontrar a posição correta
+    // ou chegar ao fim da lista.
+    while (current != NULL && fCost >= current->info.fCost)
     {
-        //printf("movimento inserido = %d\n", f->rear->movimentos[indice]);
-        canInsert = 1;
-        if(depth>2)
-        {
-            if(grandparent_mov == parent_mov && parent_mov == i)
-            {
-                canInsert = 0;
-            }
-        }
+        previous = current;
+        current = current->next;
+    }
 
-        if(parent_mov%2 == 0)
-        {
-            // garantindo que nao eh o mov contrario
-            if(i == parent_mov-1)
-                canInsert = 0;
-        }
+    // A posição correta está entre 'previous' e 'current'.
+    
+    // Se 'previous' for NULL, a inserção é no início da fila.
+    if (previous == NULL)
+    {
+        newNode->next = q->front;
+        q->front = newNode;
+    }
+    // Caso contrário, a inserção é no meio ou no fim.
+    else
+    {
+        newNode->next = current;
+        previous->next = newNode;
+    }
+    
+    // Se 'current' for NULL, a inserção foi no fim da fila,
+    // então atualizamos o 'rear'.
+    if (current == NULL)
+    {
+        q->rear = newNode;
+    }
+}
 
-        else
-        {
-            // garantindo que nao eh o mov contrario
-            if(i == parent_mov + 1)
-                canInsert = 0;
-        }
+void bfs_successors(QUEUE* q, NODE_INFO info, ht_t* ht, int* parentCube)
+{
+    int cube[24];
+    info.depth++;
 
-        if (canInsert) {
+    for(int i = 6; i>0; i--)
+    {       
+        //if (!check_redundance(info.depth, info.movs, i)) {
             // monta o cubo do filho
-            cp(parent_cube, cube);
+            cp(parentCube, cube);
             apply_move(i, cube);
+            cp(cube, info.cube);
+            info.movs[info.depth] = i;
+
+            // só insere se não estiver na hash
+            // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
+            if (!ht_get(ht, cube, 20)) {
+                enqueue(q, gen_node(info));
+                ht_set(ht, cube, info.depth);
+            }
+        //}
+    }
+}
+
+void a_star_successors(QUEUE* q, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lookupTb)
+{
+
+    int cube[24], fCost;
+    info.depth++;
+
+    for(int i = 6; i>0; i--)
+    {       
+        //if (!check_redundance(info.depth, info.movs, i)) {
+            // monta o cubo do filho
+            cp(parentCube, cube);
+            apply_move(i, cube);
+            cp(cube, info.cube);
+            info.movs[info.depth] = i;
 
             // só insere se não estiver na hash
             // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
             if (!ht_get(ht, cube, 0)) {
-                enqueue(q, depth, i, movs, cube);
+                // f(n) = g(n) + h(n)
+                // f(n) = info.depth + ht->depth
+                fCost = info.depth + get_heuristic_value(lookupTb, cube);
+                info.fCost = fCost - random_num(0, 2);
+                enqueueSorted(q, gen_node(info), fCost);
                 ht_set(ht, cube, 0);
             }
-        }
-    }
-}
-
-int visit_state(NODE *visited)
-{
-    // Checando se está montado
-    if(evaluete_state(visited->cube))
-        return 1;
-
-    return 0;
-}
-
-
-void cp_movs(NODE *source, int target[])
-{
-
-    int depth = source->depth;
-
-    for(int i = 0; i<depth+1; i++)
-    {
-        target[i] = source->movs[i];
+       // }
     }
 }
 

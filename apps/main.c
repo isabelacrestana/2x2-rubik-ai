@@ -4,20 +4,25 @@
 
 #include "menu.h"
 #include "print.h"
-#include "search.h"
+#include "search-test.h"
 #include "rubik-functions.h"
+#include "manage_lookup_tb.h"
 
-int main() {
+int main() 
+{
     srand(time(NULL)); // Inicializa o gerador com o tempo atual
 
     int rubik[24], initialCube[24], opc;
+    ht_t *lookupTb = ht_create();
+    get_lookup_table(lookupTb);
+
 
     initSolvedCube(rubik);
     printf("\n\nCubo antes de embaralhar:\n");
     ui(rubik);
 
     printf("\n\nCubo depois de embaralhar\n");
-    //random_rubik(rubik);
+    random_rubik(rubik);
     cp(rubik, initialCube);
     ui(rubik);
 
@@ -31,7 +36,9 @@ int main() {
         run_free_mode(rubik);
 
     else 
-        run_search(rubik, opc);
+        run_search(rubik, opc, lookupTb);
+
+    ht_free(lookupTb); 
 
     return 0;
 }
