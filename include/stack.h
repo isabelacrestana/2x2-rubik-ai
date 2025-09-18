@@ -2,7 +2,7 @@
 #define BIBLIOT_DFS_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
-#include "queue.h"
+#include "common.h"
 #include "hash-table.h"
 
 extern int numEstados;
@@ -14,8 +14,8 @@ typedef struct Stack
 } STACK;
 
 STACK* stack_new();
-void push(STACK* s, int depth, int mov, int movs[], int cube[]);
-void stack_generate_successors(STACK* s, int depth, int movs[], int parent_cube[], ht_t *ht);
+void push(STACK* s, NODE* newNode);
+void dfs_successors(STACK* s, NODE_INFO info, ht_t* ht, int *parentCube);
 NODE* pop(STACK* s);
 STACK* stack_free(STACK* s);
 

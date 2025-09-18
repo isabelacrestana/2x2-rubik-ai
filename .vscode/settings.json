@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "rubik-functions.h": "c"
+        "rubik-functions.h": "c",
+        "search.h": "c",
+        "common.h": "c",
+        "search-test.h": "c",
+        "data.h": "c"
     }
 }

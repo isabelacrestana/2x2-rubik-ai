@@ -3,17 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash-table.h"
+#include "common.h"
 
 extern int num;
-//Estrutura dos elementos da fila
-typedef struct node
-{
-    int movs[15];
-    int cube[24];
-    int depth;
-    int num;
-    struct node *next;  //aponta para o pr�x elemento
-} NODE;
 
 typedef struct Queue
 {
@@ -22,10 +14,10 @@ typedef struct Queue
 } QUEUE;
 
 QUEUE* queue_new();
-void enqueue(QUEUE* q, int depth, int mov, int movs[], int cube[]);
-void generate_successors(QUEUE* q, int depth, int movs[], int parent_cube[], ht_t* ht);
-int visit_state(NODE *visited);
-void cp_movs(NODE *source, int target[]);
+void enqueue(QUEUE* q, NODE* newNode);
+void enqueueSorted(QUEUE* q, NODE* newNode, int fCost);
+void bfs_successors(QUEUE* q, NODE_INFO info, ht_t* ht, int *parentCube);
+void a_star_successors(QUEUE* q, NODE_INFO info, ht_t* ht, int *parentCube,  ht_t* lookupTb);
 NODE* dequeue(QUEUE* q);
 QUEUE* queue_free(QUEUE* q);
 
