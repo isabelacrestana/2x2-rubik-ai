@@ -7,6 +7,7 @@
 #include "print.h"
 #include "rubik-functions.h"
 #include "manage_lookup_tb.h"
+#include "callback_fuctions.h"
 
 void run_search(int *cube, int search_type, ht_t* lookupTb) {
     QUEUE* q = queue_new();
@@ -15,10 +16,14 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
     ht_t *ht;
     ht = ht_create();
 
+    SearchStrategy bfs = { enqueue, dequeue, bfs_successors, bfs_can_expand, bfs_can_visit, queue_empty };
+    SearchStrategy dfs = { push, pop, dfs_successors, dfs_can_expand, dfs_can_visit, stack_empty };
+    SearchStrategy astar = { enqueue_sorted, dequeue, a_star_successors, bfs_can_expand, bfs_can_visit ,queue_empty };
+
     printf("Encontrando o caminho...\n\n");
 
     if(search_type == 2) {  // BFS
-        answer = exec_search(q, s, ht, NULL, cube, 1, 0);
+        answer = exec_search((void*)q, ht, NULL, cube, &bfs, 0);
         printf("\n\nFim da busca bfs!\n\n");
         queue_free(q);
         ht_free(ht);
@@ -29,7 +34,7 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
         // DFS
         if(search_type == 3) 
         {
-            answer = loopDFS(q, s, ht, cube);
+            answer = loopDFS((void*)s, ht, cube, &dfs);
             printf("\n\nFim da busca dfs iterativa!\n\n");
             stack_free(s);
             ht_free(ht);
@@ -38,7 +43,7 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
         // A*
         else
         {
-            answer = exec_search(q, s, ht, lookupTb, cube, 2, 0);
+            answer = exec_search((void*)q, ht, lookupTb, cube, &astar, 0);
             queue_free(q);
             ht_free(ht);
         }
@@ -53,7 +58,7 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
     }
 }
 
-NODE* exec_search(QUEUE* q, STACK* s, ht_t* ht, ht_t* lookupTB, int *cube, int bfsSearch, int maxDepth)
+NODE* exec_search(void* ds, ht_t* ht, ht_t* lookupTB, int *cube, SearchStrategy* strategy, int maxDepth)
 {
     int is_solved = 0;
     NODE *removed;
@@ -66,61 +71,37 @@ NODE* exec_search(QUEUE* q, STACK* s, ht_t* ht, ht_t* lookupTB, int *cube, int b
     initialInfo.fCost = 0;
 
     // Inserindo nó inicial
-    if(bfsSearch)
-        enqueue(q, gen_node(initialInfo));
-    else
-        push(s, gen_node(initialInfo));
+    strategy->insert(ds, gen_node(initialInfo));
 
     ht_set(ht, cube, 0);
     int cont = 0;
 
     while(!is_solved)
     {
-        if (!q->front && !s->top)
+        if (strategy->ds_empty(ds))
             return NULL;
 
         // removendo o nó inicial da fila/pilha
-        if(bfsSearch)
-            removed = dequeue(q);
-        else
-            removed = pop(s);
-
+        removed = strategy->remove(ds);
 
         // visitando o nó removido e sei que a raiz nao é a reposta
         if(removed->info.num != 1)
         {
-            if(bfsSearch)
+            if(strategy->can_visit)
             {
                 is_solved = visit_state(removed);
                 cont++;
             }
-                
-            else
-            {
-                if(removed->info.depth == maxDepth) 
-                {
-                    is_solved = visit_state(removed);
-                    cont++;
-                }
-            }
-           
         }
+
         // caso nao seja a resposta, gera seus sucessores
         if (!is_solved)
         {
             rmInfo = removed->info;
 
             // Gera sucessores usando o cubo atual
-            if(bfsSearch == 1)
-                bfs_successors(q, rmInfo, ht, rmInfo.cube);
-
-            else
-            {
-                if(bfsSearch == 0 && removed->info.depth < maxDepth)
-                    dfs_successors(s, rmInfo, ht, rmInfo.cube);
-                else if(bfsSearch == 2)
-                    a_star_successors(q, rmInfo, ht, rmInfo.cube, lookupTB);
-            }
+            if(strategy->can_expand(removed, maxDepth))
+                strategy->successor_function(ds, rmInfo, ht, rmInfo.cube, lookupTB);
 
             // desaloca o nó removido
             free(removed);
@@ -135,7 +116,7 @@ NODE* exec_search(QUEUE* q, STACK* s, ht_t* ht, ht_t* lookupTB, int *cube, int b
     return NULL;
 }
 
-NODE* loopDFS(QUEUE *q, STACK *s, ht_t* ht, int cube[])
+NODE* loopDFS(void *s, ht_t* ht, int cube[], SearchStrategy* strategy)
 {
     int depth = -1;
     NODE* answer;
@@ -147,8 +128,7 @@ NODE* loopDFS(QUEUE *q, STACK *s, ht_t* ht, int cube[])
             ht_free(ht);
             ht = ht_create();
         }
-
-        answer = exec_search(q, s, ht, NULL, cube, 0, depth++);
+        answer = exec_search(s, ht, NULL, cube, strategy, depth++);
         if(answer)
             return answer;
     }

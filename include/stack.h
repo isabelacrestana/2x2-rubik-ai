@@ -14,9 +14,12 @@ typedef struct Stack
 } STACK;
 
 STACK* stack_new();
-void push(STACK* s, NODE* newNode);
-void dfs_successors(STACK* s, NODE_INFO info, ht_t* ht, int *parentCube);
-NODE* pop(STACK* s);
+void push(void* s, NODE* newNode);
+void dfs_successors(void* s, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lookupTb);
+NODE* pop(void* s);
+int dfs_can_expand(NODE* node, int maxDepth);
+int dfs_can_visit(NODE* node, int maxDepth);
 STACK* stack_free(STACK* s);
+int stack_empty(void* s);
 
 #endif // BIBLIOT-DFS_H_INCLUDED

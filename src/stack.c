@@ -12,51 +12,62 @@ STACK* stack_new()
     return s;   //retorna o endereço
 }
 
-void push(STACK* s, NODE* newNode)
+void push(void* s, NODE* newNode)
 {
-    newNode->next = s->top;
-    s->top = newNode;
+    STACK* stack = (STACK*) s;
+    newNode->next = stack->top;
+    stack->top = newNode;
 }
 
-void dfs_successors(STACK* s, NODE_INFO info, ht_t* ht, int *parentCube)
+void dfs_successors(void* s, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lookupTb)
 {
     int cube[24];
     info.depth++;
 
     for(int i = 1; i<7; i++)
     {
-        //if (!check_redundance(info.depth, info.movs, i)) {
-            // monta o cubo do filho
-            cp(parentCube, cube);
-            apply_move(i, cube);
-            cp(cube, info.cube);
-            info.movs[info.depth] = i;
+        // monta o cubo do filho
+        cp(parentCube, cube);
+        apply_move(i, cube);
+        cp(cube, info.cube);
+        info.movs[info.depth] = i;
 
-            // só insere se não estiver na hash
-            int exists = ht_get(ht, cube, info.depth);
-            if(exists != 1)
-            {
-                push(s, gen_node(info));
-                if(exists == -1)
-                    num--;
-                else
-                    ht_set(ht, cube, info.depth);
-            }
-        //}
+        // só insere se não estiver na hash
+        int exists = ht_get(ht, cube, info.depth);
+        if(exists != 1)
+        {
+            push(s, gen_node(info));
+            if(exists == -1)
+                num--;
+            else
+                ht_set(ht, cube, info.depth);
+        }
     }
 }
 
-NODE* pop(STACK* s)
+int dfs_can_expand(NODE* node, int maxDepth)
 {
-    if (s->top == NULL)
+    return node->info.depth < maxDepth;
+}
+
+int dfs_can_visit(NODE* node, int maxDepth)
+{
+    return node->info.depth == maxDepth;
+}
+
+
+NODE* pop(void* s)
+{
+    STACK* stack = (STACK*) s;
+    if (stack->top == NULL)
     {
         printf("Pilha Vazia...");
         exit(1);
     }
 
-    NODE* aux = s->top;
+    NODE* aux = stack->top;
 
-    s->top = s->top->next;
+    stack->top = stack->top->next;
     return aux;
 }
 
@@ -74,5 +85,15 @@ STACK* stack_free(STACK* s)
     free(s);  //Libera estutura que guardava o end do top da pilha
     return NULL;   // Pilha aponta para nulo
 }
+
+int stack_empty(void* s)
+{
+    STACK* stack = (STACK*) s;
+
+    if(stack->top)
+        return 0;
+    return 1;
+}
+
 
 
