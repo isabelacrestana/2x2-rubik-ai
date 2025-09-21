@@ -15,29 +15,32 @@ QUEUE* queue_new()
     return q;
 }
 
-void enqueue(QUEUE* q, NODE* newNode)
+void enqueue(void* q, NODE* newNode)
 {
-    if (!(q->front == NULL))
-        q->rear->next = newNode;
-    q->rear = newNode;
+    QUEUE* queue = (QUEUE*) q;
+    if (!(queue->front == NULL))
+        queue->rear->next = newNode;
+    queue->rear = newNode;
 
-    if (q->front == NULL)
-        q->front = q->rear;
+    if (queue->front == NULL)
+        queue->front = queue->rear;
 }
 
-void enqueueSorted(QUEUE* q, NODE* newNode, int fCost)
+void enqueue_sorted(void* q, NODE* newNode)
 {
+    QUEUE* queue = (QUEUE*) q;
+    int fCost = newNode->info.fCost;
     // Se a fila estiver vazia, insira o primeiro elemento.
-    if (!q->front)
+    if (!queue->front)
     {
-        q->front = newNode;
-        q->rear = newNode;
+        queue->front = newNode;
+        queue->rear = newNode;
         newNode->next = NULL; // Garantir que o next seja nulo
         return;
     }
 
     NODE* previous = NULL;
-    NODE* current = q->front;
+    NODE* current = queue->front;
 
     // Percorre a fila até encontrar a posição correta
     // ou chegar ao fim da lista.
@@ -52,8 +55,8 @@ void enqueueSorted(QUEUE* q, NODE* newNode, int fCost)
     // Se 'previous' for NULL, a inserção é no início da fila.
     if (previous == NULL)
     {
-        newNode->next = q->front;
-        q->front = newNode;
+        newNode->next = queue->front;
+        queue->front = newNode;
     }
     // Caso contrário, a inserção é no meio ou no fim.
     else
@@ -66,78 +69,84 @@ void enqueueSorted(QUEUE* q, NODE* newNode, int fCost)
     // então atualizamos o 'rear'.
     if (current == NULL)
     {
-        q->rear = newNode;
+        queue->rear = newNode;
     }
 }
 
-void bfs_successors(QUEUE* q, NODE_INFO info, ht_t* ht, int* parentCube)
+void bfs_successors(void* q, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lookupTb)
 {
     int cube[24];
     info.depth++;
 
     for(int i = 6; i>0; i--)
     {       
-        //if (!check_redundance(info.depth, info.movs, i)) {
-            // monta o cubo do filho
-            cp(parentCube, cube);
-            apply_move(i, cube);
-            cp(cube, info.cube);
-            info.movs[info.depth] = i;
+        // monta o cubo do filho
+        cp(parentCube, cube);
+        apply_move(i, cube);
+        cp(cube, info.cube);
+        info.movs[info.depth] = i;
 
-            // só insere se não estiver na hash
-            // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
-            if (!ht_get(ht, cube, 20)) {
-                enqueue(q, gen_node(info));
-                ht_set(ht, cube, info.depth);
-            }
-        //}
+        // só insere se não estiver na hash
+        // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
+        if (!ht_get(ht, cube, 20)) {
+            enqueue(q, gen_node(info));
+            ht_set(ht, cube, info.depth);
+        }
     }
 }
 
-void a_star_successors(QUEUE* q, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lookupTb)
+void a_star_successors(void* q, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lookupTb)
 {
-
     int cube[24], fCost;
     info.depth++;
 
     for(int i = 6; i>0; i--)
     {       
-        //if (!check_redundance(info.depth, info.movs, i)) {
-            // monta o cubo do filho
-            cp(parentCube, cube);
-            apply_move(i, cube);
-            cp(cube, info.cube);
-            info.movs[info.depth] = i;
+        // monta o cubo do filho
+        cp(parentCube, cube);
+        apply_move(i, cube);
+        cp(cube, info.cube);
+        info.movs[info.depth] = i;
 
-            // só insere se não estiver na hash
-            // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
-            if (!ht_get(ht, cube, 0)) {
-                // f(n) = g(n) + h(n)
-                // f(n) = info.depth + ht->depth
-                fCost = info.depth + get_heuristic_value(lookupTb, cube);
-                info.fCost = fCost - random_num(0, 2);
-                enqueueSorted(q, gen_node(info), fCost);
-                ht_set(ht, cube, 0);
-            }
-       // }
+        // só insere se não estiver na hash
+        // vou sempre passar 0 no terceiro argumento pois nao é necessario para esse tipo de busca
+        if (!ht_get(ht, cube, 0)) {
+            // f(n) = g(n) + h(n)
+            // f(n) = info.depth + ht->depth
+            fCost = info.depth + get_heuristic_value(lookupTb, cube);
+            info.fCost = fCost - random_num(0, 2);
+            enqueue_sorted(q, gen_node(info));
+            ht_set(ht, cube, 0);
+        }
     }
 }
 
-NODE* dequeue(QUEUE* q)
+int bfs_can_expand(NODE* node, int maxDepth)
 {
-    NODE* temp = q->front;
+    return 1;
+}
 
-    if (q->front == NULL)
+int bfs_can_visit(NODE* node, int maxDepth)
+{
+    return 1;
+}
+
+NODE* dequeue(void* q)
+{
+    QUEUE* queue = (QUEUE*) q;
+    NODE* temp = queue->front;
+
+    if (queue->front == NULL)
     {
         printf("Fila vazia...");
         exit(1);
     }
 
-    q->front = temp->next;
+    queue->front = temp->next;
 
-    if (q->front == NULL)
+    if (queue->front == NULL)
     {
-        q->rear = NULL;
+        queue->rear = NULL;
     }
 
     return temp;
@@ -157,5 +166,14 @@ QUEUE* queue_free(QUEUE* q)
 
     free(q);
     return NULL;
+}
+
+int queue_empty(void* q)
+{
+    QUEUE* queue = (QUEUE*) q;
+
+    if(queue->front)
+        return 0;
+    return 1;
 }
 

@@ -4,6 +4,7 @@
         "search.h": "c",
         "common.h": "c",
         "search-test.h": "c",
-        "data.h": "c"
+        "data.h": "c",
+        "queue.h": "c"
     }
 }
