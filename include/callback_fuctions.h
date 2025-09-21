@@ -12,7 +12,7 @@ typedef struct SEARCH_STRATEGY
     void (*insert)(void* dataStructre, NODE* node);
     NODE* (*remove)(void* dataStructure);
     void (*successor_function)(void* ds, NODE_INFO info, ht_t* ht, int* cube, ht_t* lookupTb);
-    int (*can_spand)(NODE* node, int maxDepth);
+    int (*can_expand)(NODE* node, int maxDepth);
     int (*can_visit)(NODE* node, int maxDepth);
     int (*ds_empty)(void* ds);
 } SearchStrategy;   

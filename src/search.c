@@ -100,7 +100,7 @@ NODE* exec_search(void* ds, ht_t* ht, ht_t* lookupTB, int *cube, SearchStrategy*
             rmInfo = removed->info;
 
             // Gera sucessores usando o cubo atual
-            if(strategy->can_spand(removed, maxDepth))
+            if(strategy->can_expand(removed, maxDepth))
                 strategy->successor_function(ds, rmInfo, ht, rmInfo.cube, lookupTB);
 
             // desaloca o nó removido
