@@ -6,9 +6,11 @@
 #include "queue.h"
 #include "stack.h"
 #include "data.h"
+#include "callback_fuctions.h"
 
 int main()
 {
+    SearchStrategy bfs = { enqueue, dequeue, bfs_successors, bfs_can_expand, bfs_can_visit, queue_empty };
     EntryData d;
     FILE *file;
     QUEUE* q;
@@ -20,7 +22,7 @@ int main()
 
     initSolvedCube(solvedCube);
     //loopDFS(q, s, ht, solvedCube);
-    exec_search(q,s,ht,NULL,solvedCube,1,0);
+    exec_search((void*)q,ht,NULL,solvedCube,&bfs,0);
     //exec_search(q, s, ht, ht, solvedCube, 1, 0);
     printf("Num = %d", num);
 
