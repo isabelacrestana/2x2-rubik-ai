@@ -29,14 +29,22 @@ int main()
     welcome_screen();
     fflush(stdin);
 
-    opc = main_menu(rubik);
-    system("clear");
+    do
+    {
+        opc = main_menu(rubik);
+        if(opc == 1)
+        {
+            run_free_mode(rubik);
+            getchar();
+        }
 
-    if(opc == 1)
-        run_free_mode(rubik);
+        else if(opc != 0) 
+            run_search(rubik, opc, lookupTb);
+        else
+            exit(0);
+    } while(opc!=0);
 
-    else 
-        run_search(rubik, opc, lookupTb);
+    
 
     ht_free(lookupTb); 
 

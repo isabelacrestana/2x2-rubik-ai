@@ -16,10 +16,11 @@ int main_menu(int cube[])
                "                  2. Busca em Largura\n"
                "                  3. Busca em Profundidade Iterativa\n"
                "                  4. A*\n"
+               "                  0. Finalizar o programa\n"
                "                  ");
         charOpc = getchar();
         getchar();
-    }while(charOpc<'1' || charOpc>'4');
+    }while(charOpc<'0' || charOpc>'4');
 
     return charOpc - '0';
 }
@@ -29,6 +30,8 @@ void run_free_mode(int cube[]) {
     int opc;
     do{
         opc = free_mode_menu(cube);
+        if(opc == 0)
+            return;
         apply_move(opc, cube);
     }while(!evaluete_state(cube));
 }
@@ -37,7 +40,7 @@ int free_mode_menu(int cube[])
 {
     int opc;
     do {
-        system("cls");
+        //system("cls");
         printf("\n\n                  Modo de jogo: LIVRE\n\n\n");
         printf("\n                  Cubo Atual\n");
         ui(cube);

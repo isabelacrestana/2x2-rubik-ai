@@ -60,7 +60,7 @@ void print_mov(int mov)
     }
 }
 
-void show_search_result(NODE* answer, int ai_type, int *cube){
+void show_search_result(NODE* answer, int *cube){
     int depth = answer->info.depth;
     printf("profundidade final = %d\n\n", depth);
     printf("Passo a passo ate a resposta:\n");
@@ -77,5 +77,7 @@ void show_search_result(NODE* answer, int ai_type, int *cube){
     printf("\n\n\n                   ---Cubo montado---\n\n");
     ui(answer->info.cube);
     printf("\n\n");
+    printf("        PRESSIONE QUALQUER TECLA PARA VOLTAR AO MENU INICIAL...");
+    getchar();
 
 }

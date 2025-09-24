@@ -10,6 +10,7 @@
 #include "callback_fuctions.h"
 
 void run_search(int *cube, int search_type, ht_t* lookupTb) {
+    num = 0;
     QUEUE* q = queue_new();
     STACK* s = stack_new();
     NODE* answer;
@@ -25,8 +26,6 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
     if(search_type == 2) {  // BFS
         answer = exec_search((void*)q, ht, NULL, cube, &bfs, 0);
         printf("\n\nFim da busca bfs!\n\n");
-        queue_free(q);
-        ht_free(ht);
     } 
 
     else 
@@ -36,16 +35,13 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
         {
             answer = loopDFS((void*)s, ht, cube, &dfs);
             printf("\n\nFim da busca dfs iterativa!\n\n");
-            stack_free(s);
-            ht_free(ht);
         }
 
         // A*
         else
         {
             answer = exec_search((void*)q, ht, lookupTb, cube, &astar, 0);
-            queue_free(q);
-            ht_free(ht);
+            printf("\n\nFim da busca A*!\n\n");
         }
     }
 
@@ -53,9 +49,13 @@ void run_search(int *cube, int search_type, ht_t* lookupTb) {
         printf("\nNao foi encontrado um caminho. Cubo invalido.\n");
     else
     {
-        show_search_result(answer, search_type, cube);
+        show_search_result(answer, cube);
         free(answer);
     }
+
+    stack_free(s);
+    queue_free(q);
+    ht_free(ht);
 }
 
 NODE* exec_search(void* ds, ht_t* ht, ht_t* lookupTB, int *cube, SearchStrategy* strategy, int maxDepth)
@@ -102,7 +102,7 @@ NODE* exec_search(void* ds, ht_t* ht, ht_t* lookupTB, int *cube, SearchStrategy*
             // Gera sucessores usando o cubo atual
             if(strategy->can_expand(removed, maxDepth))
                 strategy->successor_function(ds, rmInfo, ht, rmInfo.cube, lookupTB);
-
+                
             // desaloca o nó removido
             free(removed);
         }
