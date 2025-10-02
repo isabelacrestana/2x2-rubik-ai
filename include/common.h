@@ -6,7 +6,6 @@ typedef struct nodeInfo
     int movs[15];
     int cube[24];
     int depth;
-    int num;
     int fCost;
 
 } NODE_INFO;

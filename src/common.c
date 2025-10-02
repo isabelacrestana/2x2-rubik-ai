@@ -9,8 +9,6 @@ NODE* gen_node(NODE_INFO info)
     NODE* newNode;
     newNode = (NODE*) malloc(sizeof(NODE));
     newNode->info = info;
-    num++;
-    newNode->info.num = num;
     newNode->next = NULL;
     return newNode;
 }

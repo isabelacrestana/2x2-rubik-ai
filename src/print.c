@@ -7,12 +7,9 @@
 #include "rubik-functions.h"
 
 void welcome_screen() {
-    printf("\n\nPressione ENTER...");
-    getchar();
-    system("clear");
 
-    printf("\n\n                     BEM VINDO AO PROGRAMA (...)\n\n\n"
-           "                  Pressione ENTER para iniciar...");
+    printf("\n\n                 BEM VINDO AO PROGRAMA Rubik AI\n\n\n"
+           "                 Pressione ENTER para iniciar...");
     getchar();
 }
 
@@ -69,8 +66,6 @@ void show_search_result(NODE* answer, int *cube){
         printf("%d. ", i);
         print_mov(answer->info.movs[i]);
     }
-
-    printf("\nNum de estados gerados = %d\n", num);
 
     printf("\n\n                 ---Cubo embaralhado---\n\n");
     ui(cube);

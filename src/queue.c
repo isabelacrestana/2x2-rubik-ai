@@ -4,8 +4,6 @@
 #include "hash-table.h"
 #include "common.h"
 
-int num = 0;
-
 QUEUE* queue_new()
 {
     QUEUE *q;

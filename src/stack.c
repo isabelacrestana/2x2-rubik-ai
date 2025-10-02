@@ -37,9 +37,7 @@ void dfs_successors(void* s, NODE_INFO info, ht_t* ht, int *parentCube, ht_t* lo
         if(exists != 1)
         {
             push(s, gen_node(info));
-            if(exists == -1)
-                num--;
-            else
+            if(!exists)
                 ht_set(ht, cube, info.depth);
         }
     }

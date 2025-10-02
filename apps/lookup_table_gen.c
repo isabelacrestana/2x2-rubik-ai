@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "hash-table.h"
 #include "rubik-functions.h"
-#include "search-test.h"
+#include "search_header.h"
 #include "queue.h"
 #include "stack.h"
 #include "data.h"
@@ -14,17 +14,17 @@ int main()
     EntryData d;
     FILE *file;
     QUEUE* q;
-    STACK* s;
+    int num;
     int solvedCube[24];
     ht_t *ht = ht_create();
     q = queue_new();
-    s = stack_new();
+
+    printf("Gerando lookup table...\n");
 
     initSolvedCube(solvedCube);
-    //loopDFS(q, s, ht, solvedCube);
-    exec_search((void*)q,ht,NULL,solvedCube,&bfs,0);
-    //exec_search(q, s, ht, ht, solvedCube, 1, 0);
-    printf("Num = %d", num);
+    exec_search((void*)q,ht,NULL,solvedCube,&bfs,0, &num);
+
+    printf("Lookup table completa.\n");
 
     file = fopen("lookup_tb.bin", "wb");
     if (!file) {
@@ -48,6 +48,9 @@ int main()
     fclose(file);
         
     ht_free(ht);
+    queue_free(q);
+
+    printf("Lookup table escrita no arquivo.\n");
 
     return 0;
 

@@ -2,6 +2,20 @@
 #include "menu.h"
 #include "rubik-functions.h"
 
+int first_menu()
+{
+    char charOpc;
+    do
+    {
+        printf("\n\n\n\tEscolha uma das opcoes abaixo\n"
+               "\t1. Usar cubo aleatorio gerado pelo programa\n"
+               "\t2. Entrar com meu cubo\n\t");
+        charOpc = getchar();
+    } while(charOpc < '1' || charOpc > '2');
+
+    return charOpc - '0';
+}
+
 int main_menu(int cube[])
 {
     char charOpc;

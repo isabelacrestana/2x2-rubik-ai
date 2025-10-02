@@ -57,6 +57,18 @@ make lookup_table
 ```
 ---
 
+### *Sem makefile*
+
+Para gerar o rubik
+```bash
+gcc -Wall -Wextra -g -Iinclude src/*.c apps/main.c -o bin/rubik
+```
+Para gerar o lookup-tb
+```bash
+
+gcc -Wall -Wextra -g -Iinclude src/*.c apps/main.c -o bin/rubik
+```
+
 ## 📊 Algoritmos suportados
 - BFS (Busca em Largura)
 - Iterative Deepening

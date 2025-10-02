@@ -18,6 +18,7 @@ void apply_move(int mov, int v[]);
 void cp(int source[], int target[]);
 int random_num(int n_min, int n_max);
 void random_rubik(int v[]);
-
+void enter_cube(int cube[]);
+int valid_cube(int cube[]);
 
 #endif // FUNCOES_CUBO_MAGICO_H_INCLUDED

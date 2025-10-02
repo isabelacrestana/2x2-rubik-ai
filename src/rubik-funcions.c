@@ -11,16 +11,7 @@ void initSolvedCube(int v[])
     // 5: AZUL
     // 6: VERDE
     int vetor[24] = {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6};
-    //int vetor[24] = {1,6,5,4,  3,2,1,3,  5,1,2,3,  6,4,4,3,  2,1,5,2,  4,6,6,5};
-
-    //tava testando esse
-    //int vetor[24] = {1,4,6,1,3,1,5,6,4,5,2,3,2,4,5,2,3,6,5,6,1,2,4,3};
-
-    //esse eh o de 14 movimentos
-    //int vetor[24] = {1,2,1,1,  6,3,4,6,   5,3,4,3,   4,5,4,6,   5,2,2,3,   2,5,6,1};
-    //int vetor[24] = {1,6,5,5,    2,4,2,5,   6,2,3,6,    6,4,3,3,    3,1,5,1,  4,1,4,2};
     cp(vetor, v);
-
 }
 
 
@@ -327,4 +318,83 @@ void random_rubik(int v[])
            num--;
         }
     }
+}
+
+void enter_cube(int cube[])
+{
+
+    for(int i = 0; i<6; i++)
+    {
+        printf("\n\n\tCores\n"
+            "\t1: BRANCO\n"
+            "\t2: VERMELHO\n"
+            "\t3: AMARELO\n"
+            "\t4: LARANJA\n"
+            "\t5: AZUL\n"
+            "\t6: VERDE\n\n");
+
+        printf("\tFACE ");
+        switch(i)
+        {
+            case 0:
+            {
+                printf("DA FRENTE:\n");
+                break;
+            }
+            case 1:
+            {
+                printf("DA DIREITA:\n");
+                break;
+            }
+            case 2:
+            {
+                printf("DE TRAS:\n");
+                break;
+            }
+            case 3:
+            {
+                printf("DA ESQUERDA:\n");
+                break;
+            }
+            case 4:
+            {
+                printf("DE CIMA:\n");
+                break;
+            }
+            case 5:
+            {
+                printf("DE BAIXO:\n");
+                break;
+            }
+        }
+    
+        for(int j = 0; j<4; j++)
+        {
+            printf("\tCor posicao %d: \t", j+1);
+            do
+            {
+                scanf("%d", &cube[4*i + j]);
+            }while(cube[4*i + j] < 1 || cube[4*i + j] > 6);
+        }
+
+        printf("\t-------------------\n");
+    }
+}
+
+int valid_cube(int cube[])
+{
+    int num[6] = {0,0,0,0,0,0};
+
+    for(int i = 0; i < 24; i++)
+    {
+        num[cube[i] - 1]++;
+        if(num[cube[i] - 1] > 4)
+        {
+            printf("\tCubo invalido\n");
+            printf("\tEntre com o cubo novamente\n");
+            return 0;
+        }
+    }
+
+    return 1;
 }
